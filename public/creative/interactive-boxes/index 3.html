@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <title>Interactive Boxes</title>
+  </head>
+  <body>
+    <main class="game" aria-label="Interactive geometric tile game">
+      <canvas id="game-canvas" tabindex="0" aria-label="Interactive tile canvas"></canvas>
+      <p class="status" id="status" aria-live="polite">Select a tile to begin.</p>
+    </main>
+    <aside class="controls" aria-label="Interactive Boxes controls">
+      <div class="desktop-help">
+        <strong>Desktop</strong>
+        <span>Click: split</span><span>Right-click: merge</span><span>Arrow keys: rotate / change shape</span>
+      </div>
+      <div class="actions" aria-label="Tile actions">
+        <button type="button" data-action="split">Split</button>
+        <button type="button" data-action="merge">Merge</button>
+        <button type="button" data-action="rotate-left" aria-label="Rotate left">↺</button>
+        <button type="button" data-action="rotate-right" aria-label="Rotate right">↻</button>
+        <button type="button" data-action="shape-previous" aria-label="Previous shape">← Shape</button>
+        <button type="button" data-action="shape-next" aria-label="Next shape">Shape →</button>
+        <button type="button" class="reset" data-action="reset">Reset</button>
+      </div>
+    </aside>
+    <script src="sketch.js"></script>
+  </body>
+</html>

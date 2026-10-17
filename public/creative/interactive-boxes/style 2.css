@@ -1,0 +1,44 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  overflow: hidden;
+  background: #222;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main { min-height: 0; }
+
+canvas {
+  display: block;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
+  background: rgb(0 0 0 / 24%);
+  font-size: clamp(0.55rem, 1.35vw, 0.7rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.controls p { margin: 0; font-weight: 700; }
+.controls ul { display: flex; flex: 1; flex-wrap: wrap; justify-content: flex-end; gap: 0.45rem 0.85rem; margin: 0; padding: 0; list-style: none; }
+.controls li { display: flex; align-items: center; gap: 0.25rem; white-space: nowrap; }
+.controls kbd { min-width: 1rem; padding: 0.1rem 0.2rem; border: 1px solid rgb(255 255 255 / 55%); border-radius: 0.15rem; font: inherit; line-height: 1; text-align: center; }
+.controls button { padding: 0.3rem 0.5rem; border: 1px solid #fff; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.controls button:hover, .controls button:focus-visible { background: #fff; color: #222; }
+
+@media (max-width: 460px) {
+  .controls { align-items: flex-start; flex-direction: column; }
+  .controls ul { justify-content: flex-start; }
+}

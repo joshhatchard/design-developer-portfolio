@@ -10,18 +10,13 @@ import { useGSAP } from "@gsap/react";
 import type { HeroController } from "../hero-dive/controller";
 import { warpConfig } from "./config";
 import LoadingScreen from "../LoadingScreen";
+import SiteAudio from "../SiteAudio";
 import { PageTransitionProvider } from "../PageTransition";
 
 const WarpCanvas = dynamic(() => import("./WarpCanvas"), { ssr: false });
 const motionQuery = "(prefers-reduced-motion: no-preference)";
-const desktopViewportQuery = "(min-width: 701px)";
 const subscribeMotion = (callback: () => void) => {
   const query = window.matchMedia(motionQuery);
-  query.addEventListener("change", callback);
-  return () => query.removeEventListener("change", callback);
-};
-const subscribeDesktopViewport = (callback: () => void) => {
-  const query = window.matchMedia(desktopViewportQuery);
   query.addEventListener("change", callback);
   return () => query.removeEventListener("change", callback);
 };
@@ -57,12 +52,8 @@ export function useScrollRuntime() {
 
 export default function ScrollProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const isCaseStudy = pathname.startsWith("/work/");
   const enabled = useSyncExternalStore(subscribeMotion, () => window.matchMedia(motionQuery).matches, () => false);
-  const desktopViewport = useSyncExternalStore(
-    subscribeDesktopViewport,
-    () => window.matchMedia(desktopViewportQuery).matches,
-    () => false,
-  );
   const [entries, setEntries] = useState<WarpEntry[]>([]);
   const runtime = useRef<ScrollRuntime>({ scroll: 0, velocity: 0, delta: 0, lenis: null, update: new Set(), measure: new Set(), commit: new Set(), refresh: new Set(), render: new Set(), backgroundRender: new Set(), heroes: new Set() });
   const register = useCallback((entry: WarpEntry) => {
@@ -169,7 +160,8 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
     <ScrollContext.Provider value={value}>
       <PageTransitionProvider>
         {children}
-        {desktopViewport && <WarpCanvas />}
+        <SiteAudio />
+        {!isCaseStudy && <WarpCanvas />}
         <LoadingScreen runtime={runtime} />
       </PageTransitionProvider>
     </ScrollContext.Provider>

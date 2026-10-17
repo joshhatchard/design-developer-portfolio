@@ -6,9 +6,8 @@ import { PageTransitionLink } from "./PageTransition";
 import styles from "./CaseStudies.module.css";
 
 const caseStudies = [
-  { number: "01", title: "Granic", year: "2025", type: "Product design", href: "/work/granic", src: "/projects/granic/thumbnail.jpg", alt: "Granic deadline tracker preview", hoverDirection: 2 as const },
-  { number: "02", title: "Designing for Country", year: "2025", type: "UI design + development", href: "/work/canvas", src: "/projects/canvas/thumbnail.jpg", alt: "University of Sydney First Nations support page preview", hoverDirection: 3 as const },
-  { number: "03", title: "Project three", year: "2023", type: "Case study", href: "/work/project-three", src: "/case-studies/project-three.svg", alt: "Placeholder artwork: overlapping blue and green interface panels", hoverDirection: 1 as const },
+  { number: "01", title: "Granic", year: "2025", type: "Product design", href: "/work/granic", src: "/projects/previews/granic.png", alt: "Granic deadline tracker preview", hoverDirection: 2 as const },
+  { number: "02", title: "Designing for Country", year: "2025", type: "UI design + development", href: "/work/canvas", src: "/projects/previews/canvas.png", alt: "University of Sydney First Nations support page preview", hoverDirection: 3 as const },
 ];
 
 export default function CaseStudies() {

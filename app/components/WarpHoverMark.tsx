@@ -13,7 +13,8 @@ export default function WarpHoverMark({ direction }: { direction: 0 | 1 | 2 | 3 
     const mark = ref.current;
     const link = mark?.closest<HTMLElement>("[data-card-hover-target]");
     const image = link?.querySelector<HTMLElement>("[data-gallery-image]");
-    if (!mark || !link || !image) return;
+    const positionedParent = mark?.offsetParent as HTMLElement | null;
+    if (!mark || !link || !image || !positionedParent) return;
 
     const state = runtime.current;
     let nearViewport = false;
@@ -25,9 +26,9 @@ export default function WarpHoverMark({ direction }: { direction: 0 | 1 | 2 | 3 
       if (!dirty && (!nearViewport || previousScroll === state.scroll)) return;
       dirty = false;
       previousScroll = state.scroll;
-      const linkBounds = link.getBoundingClientRect();
+      const parentBounds = positionedParent.getBoundingClientRect();
       const imageBounds = image.getBoundingClientRect();
-      nextCenter = `${(imageBounds.top - linkBounds.top + imageBounds.height / 2).toFixed(2)}px`;
+      nextCenter = `${(imageBounds.top - parentBounds.top + imageBounds.height / 2).toFixed(2)}px`;
     };
     const commit = () => {
       if (nextCenter === currentCenter) return;

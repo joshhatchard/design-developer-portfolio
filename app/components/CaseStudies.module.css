@@ -90,6 +90,7 @@
   align-items: baseline;
   gap: 0.4rem 1rem;
   margin-top: 0.75rem;
+  color: var(--paper);
   font-family: var(--font-label);
   font-size: 0.75rem;
   font-weight: 400;

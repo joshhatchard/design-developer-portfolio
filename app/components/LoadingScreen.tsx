@@ -44,6 +44,15 @@ export default function LoadingScreen({ runtime }: Props) {
     window.dispatchEvent(new Event("portfolio-ready"));
   }, [phase]);
 
+  // This effect deliberately has no WebGL dependency. It is registered before
+  // the renderer effect below, so an exception in renderer, shader, or model
+  // setup cannot leave the loading overlay permanently on screen.
+  useEffect(() => {
+    if (phase !== "loading") return;
+    const timer = window.setTimeout(() => setPhase("leaving"), FALLBACK_DISMISS_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
   useEffect(() => {
     if (phase === "done") return;
     const resetToHero = () => {
@@ -85,24 +94,38 @@ export default function LoadingScreen({ runtime }: Props) {
     const startedAt = performance.now();
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const compactViewport = window.matchMedia("(max-width: 700px)").matches;
 
-    // The full loader has its own WebGL model. On phones that is an expensive
-    // fourth renderer and, on some mobile browsers, can prevent the loader
-    // from ever reporting ready. Keep the short handoff but skip WebGL.
-    if (window.matchMedia("(max-width: 700px)").matches) {
-      setReady(true);
-      const leaveTimer = window.setTimeout(() => setPhase("leaving"), 450);
+    // A second renderer is unreliable on memory-constrained phones. The main
+    // canvas can still render after the overlay leaves, so use the lightweight
+    // handoff here instead.
+    if (compactViewport) {
+      const leaveTimer = window.setTimeout(() => {
+        setReady(true);
+        setPhase("leaving");
+      }, 450);
       return () => clearTimeout(leaveTimer);
     }
 
+    // Set this up before creating any WebGL resources. A driver, shader, or
+    // material failure can otherwise throw before the old fallback timer is
+    // registered, leaving the splash screen permanently over the page.
+    const forcedDismissal = window.setTimeout(() => {
+      setPhase("leaving");
+    }, FALLBACK_DISMISS_MS);
+
     let renderer: WebGLRenderer;
     try {
-      renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
+      // Keep the loading model on phones, but use one physical pixel per CSS
+      // pixel and no multisampling. It is visible briefly and doesn't need the
+      // expensive desktop-quality renderer.
+      renderer = new WebGLRenderer({ canvas, alpha: true, antialias: !compactViewport });
     } catch {
       const leaveTimer = window.setTimeout(() => {
         setPhase("leaving");
       }, 0);
       return () => {
+        clearTimeout(forcedDismissal);
         clearTimeout(leaveTimer);
       };
     }
@@ -116,7 +139,7 @@ export default function LoadingScreen({ runtime }: Props) {
     const material = createStickmanMaterial(renderer.getPixelRatio(), {
       ink: LOADER_INK,
       paper: LOADER_PAPER,
-    });
+    }, true);
     let active = true;
     let frame = 0;
     let model: Group | null = null;
@@ -194,12 +217,10 @@ export default function LoadingScreen({ runtime }: Props) {
       frame = requestAnimationFrame(render);
     };
     frame = requestAnimationFrame(render);
-    const fallback = window.setTimeout(dismiss, FALLBACK_DISMISS_MS);
-
     return () => {
       active = false;
       cancelAnimationFrame(frame);
-      clearTimeout(fallback);
+      clearTimeout(forcedDismissal);
       observer.disconnect();
       window.removeEventListener("load", onPageLoad);
       if (model) disposeModel(model);

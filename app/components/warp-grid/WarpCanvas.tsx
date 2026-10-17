@@ -24,7 +24,7 @@ class CanvasBoundary extends Component<{ children: ReactNode }, { failed: boolea
 // Add additional synced scene objects here; they share the same canvas and clock.
 function SceneObjects() {
   const { entries, runtime, motionEnabled } = useScrollRuntime();
-  const { gl, scene, camera } = useThree();
+  const { gl, scene, camera, size } = useThree();
   useEffect(() => {
     const render = () => {
       gl.autoClear = false;
@@ -38,7 +38,9 @@ function SceneObjects() {
     renderers.add(render);
     return () => { renderers.delete(render); };
   }, [gl, scene, camera, runtime]);
-  return <><HeroDiver />{motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
+  // On phones the hero is the only WebGL scene. Gallery cards stay as their
+  // native images, avoiding a separate texture and shader for every card.
+  return <><HeroDiver />{size.width > 700 && motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
 }
 
 export default function WarpCanvas() {
@@ -48,10 +50,7 @@ export default function WarpCanvas() {
     () => window.matchMedia(desktopMotionQuery).matches,
     () => false,
   );
-  // Phones use the accessible DOM media and SVG illustration. Avoid creating
-  // a WebGL context at all: the hero, gallery and CTA otherwise compete for
-  // GPU memory during a touch scroll.
-  if (lost || !desktopMotion) return null;
+  if (lost) return null;
   return (
     <CanvasBoundary>
       <div className="pointer-events-none fixed inset-0 z-10" data-warp-canvas aria-hidden="true" onContextMenu={(event) => event.preventDefault()}>
@@ -60,7 +59,9 @@ export default function WarpCanvas() {
           orthographic
           camera={{ position: [0, 0, 1000], near: 0.1, far: 2000, zoom: 1 }}
           frameloop="never"
-          dpr={[1, 1.25]}
+          // The phone scene only contains the hero figure, so it can use a
+          // sharper cap without paying for the desktop gallery shaders.
+          dpr={desktopMotion ? [1, 1.25] : [1, 1.5]}
           gl={{ alpha: true, antialias: true, toneMapping: NoToneMapping }}
           fallback={null}
           onCreated={({ gl }) => {

@@ -12,7 +12,7 @@ type TransitionContextValue = {
 const TransitionContext = createContext<TransitionContextValue | null>(null);
 const COVER_DURATION = 700;
 const REVEAL_DURATION = 700;
-const RETURN_SCROLL_KEY = "portfolio:project-return-scroll";
+export const PROJECT_RETURN_SCROLL_KEY = "portfolio:project-return-scroll";
 
 export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -40,21 +40,24 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     }, COVER_DURATION);
   };
   const navigate = (href: string, resetScroll = true, rememberPosition = false) => {
-    if (rememberPosition) window.sessionStorage.setItem(RETURN_SCROLL_KEY, String(window.scrollY));
+    if (window.location.pathname.startsWith("/work/") && !href.startsWith("/work/")) {
+      window.sessionStorage.setItem("portfolio:skip-hero-splash-on-return", "true");
+    }
+    if (rememberPosition) window.sessionStorage.setItem(PROJECT_RETURN_SCROLL_KEY, String(window.scrollY));
     begin(
       () => router.push(href),
       resetScroll ? () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }) : undefined,
     );
   };
-  const goBack = (fallback: string) => begin(() => {
-    if (window.history.length > 1) router.back();
-    else router.push(fallback);
-  }, () => {
-    const savedPosition = window.sessionStorage.getItem(RETURN_SCROLL_KEY);
-    if (!savedPosition) return;
-    window.sessionStorage.removeItem(RETURN_SCROLL_KEY);
-    window.scrollTo({ top: Number(savedPosition), left: 0, behavior: "instant" });
-  });
+  const goBack = (fallback: string) => {
+    if (window.location.pathname.startsWith("/work/")) {
+      window.sessionStorage.setItem("portfolio:skip-hero-splash-on-return", "true");
+    }
+    // A deterministic push lets the homepage restore its own saved position
+    // after its scroll runtime has mounted. Browser history restoration races
+    // with that runtime and was intermittently landing at the hero instead.
+    begin(() => router.push(fallback, { scroll: false }));
+  };
 
   useEffect(() => () => {
     if (coverTimer.current) window.clearTimeout(coverTimer.current);

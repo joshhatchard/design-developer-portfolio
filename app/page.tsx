@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import HomeScrollRestorer from "./components/HomeScrollRestorer";
 import WorkShowcase from "./components/WorkShowcase";
 import CaseStudies from "./components/CaseStudies";
 import Creative from "./components/Creative";
@@ -11,6 +12,7 @@ export default function Home() {
     <>
       <Navbar />
       <main>
+        <HomeScrollRestorer />
         <Hero />
         <WorkShowcase>
           <CaseStudies />

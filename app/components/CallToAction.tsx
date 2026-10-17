@@ -92,8 +92,49 @@ export default function CallToAction() {
     gsap.registerPlugin(ScrollTrigger);
     const section = sectionRef.current;
     if (!section) return;
-    // Keep the contact details direct and lightweight on phones.
-    if (window.matchMedia("(max-width: 700px)").matches) return;
+    const compactViewport = window.matchMedia("(max-width: 700px)").matches;
+    if (compactViewport) {
+      // Phones keep the desktop's scroll story, but animate the existing SVG
+      // stickman instead of starting another WebGL renderer at the page end.
+      const actor = section.querySelector<HTMLElement>("[data-cta-actor]")!;
+      const colour = section.querySelector<HTMLElement>("[data-cta-colour]")!;
+      const words = Array.from(section.querySelectorAll<HTMLElement>("[data-quote-words]"));
+      const cta = section.querySelector<HTMLElement>("[data-cta-content]")!;
+      const primary = getComputedStyle(section).getPropertyValue("--primary").trim();
+      const paper = getComputedStyle(section).getPropertyValue("--paper").trim();
+      section.dataset.animated = "true";
+      gsap.set(actor, { autoAlpha: 1, scale: 1, rotation: 0 });
+      gsap.set(colour, { autoAlpha: 0 });
+      gsap.set(words, { autoAlpha: 0, y: 18 });
+      gsap.set(cta, { autoAlpha: 0, y: 18 });
+      const timeline = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+      timeline
+        .to(actor, { scale: 24, rotation: 24, duration: 1.25 }, 0)
+        .to(colour, { autoAlpha: 1, backgroundColor: primary, duration: 0.28 }, 0.92)
+        .to(actor, { autoAlpha: 0, duration: 0.12 }, 1.12)
+        .to(words[0], { autoAlpha: 1, y: 0, duration: 0.3, ease: "power3.out" }, 1.35)
+        .to(words[0], { autoAlpha: 0, y: -18, duration: 0.24 }, 2.25)
+        .to(words[1], { autoAlpha: 1, y: 0, duration: 0.3, ease: "power3.out" }, 2.6)
+        .to(words[1], { autoAlpha: 0, y: -18, duration: 0.24 }, 3.5)
+        .to(colour, { backgroundColor: paper, duration: 0.28 }, 3.9)
+        .set(actor, { autoAlpha: 1, scale: 24, rotation: 24, y: 0 }, 3.9)
+        .to(actor, { scale: 1, rotation: 0, y: -Math.min(window.innerHeight * 0.14, 105), duration: 0.7, ease: "power3.out" }, 4.03)
+        .to(cta, { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out" }, 4.2);
+      return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
+        delete section.dataset.animated;
+      };
+    }
     section.dataset.animated = "true";
     const actor = section.querySelector<HTMLElement>("[data-cta-actor]")!;
     const colour = section.querySelector<HTMLElement>("[data-cta-colour]")!;

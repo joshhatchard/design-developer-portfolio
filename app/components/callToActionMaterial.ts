@@ -112,6 +112,30 @@ const FRAGMENT = /* glsl */ `
   }
 `;
 
+// Mobile uses this instead of the animated hand-drawn shader above. It keeps
+// the graphic language—hard tonal planes and an ink edge—without per-pixel
+// noise, hatching, or repeated texture-style calculations.
+const LIGHTWEIGHT_FRAGMENT = /* glsl */ `
+  uniform vec3 uInk;
+  uniform vec3 uPaper;
+  uniform vec3 uLight;
+  varying vec3 vNormal;
+
+  void main() {
+    vec3 n = normalize(vNormal);
+    if (!gl_FrontFacing) n = -n;
+    vec3 light = normalize(mat3(viewMatrix) * uLight);
+    float amount = dot(n, light);
+
+    // Three deliberately sharp bands make the low-poly form read clearly.
+    // Strict ink/paper treatment: the model stays graphic and high-contrast
+    // against the CTA field, rather than introducing soft grey shading.
+    vec3 shade = amount > 0.38 ? uPaper : uInk;
+    float silhouette = 1.0 - smoothstep(0.17, 0.32, n.z);
+    gl_FragColor = vec4(mix(shade, uInk, silhouette), 1.0);
+  }
+`;
+
 function disposeMaterial(material: Material) {
   Object.values(material).forEach((value) => {
     if (value instanceof Texture) value.dispose();
@@ -132,10 +156,10 @@ export function disposeModel(root: Object3D) {
   });
 }
 
-export function createStickmanMaterial(pixelRatio: number, palette?: StickmanPalette) {
+export function createStickmanMaterial(pixelRatio: number, palette?: StickmanPalette, lightweight = false) {
   return new ShaderMaterial({
           vertexShader: VERTEX,
-          fragmentShader: FRAGMENT,
+          fragmentShader: lightweight ? LIGHTWEIGHT_FRAGMENT : FRAGMENT,
           uniforms: {
             uInk: { value: new Vector3(...(palette?.ink ?? INK_RGB)) },
             uPaper: { value: new Vector3(...(palette?.paper ?? PAPER_RGB)) },

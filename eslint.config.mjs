@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The zine is a self-contained static export with its own browser script.
+    "public/creative/theory-and-culture-zine/reader/**",
+    // Interactive Boxes is a self-contained p5.js sketch.
+    "public/creative/interactive-boxes/**",
   ]),
 ]);
 

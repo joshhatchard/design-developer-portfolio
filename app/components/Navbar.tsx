@@ -27,6 +27,11 @@ export default function Navbar({ page = "home" }: NavbarProps) {
     if (menuExitTimer.current) window.clearTimeout(menuExitTimer.current);
     menuExitTimer.current = window.setTimeout(() => setMenuVisible(false), 500);
   };
+  const muteSplashForNavigation = () => {
+    // Anchor navigation can cross the dive impact point without the visitor
+    // intentionally performing the dive gesture.
+    window.sessionStorage.setItem("portfolio:mute-hero-splash-until", String(Date.now() + 6000));
+  };
   const openMenu = () => {
     if (menuExitTimer.current) window.clearTimeout(menuExitTimer.current);
     setMenuVisible(true);
@@ -152,12 +157,12 @@ export default function Navbar({ page = "home" }: NavbarProps) {
     <header ref={ref} className="navbar" data-entrance={isCaseStudy ? undefined : "home"} data-surface={isCaseStudy ? "case-study" : undefined} data-menu-open={menuOpen} data-menu-visible={menuVisible}>
       <nav className="siteContainer" aria-label="Main navigation">
         {isCaseStudy ? (
-          <PageTransitionLink className="nav-wordmark" href="/" onClick={closeMenu}>
+          <PageTransitionLink className="nav-wordmark" href="/" onClick={() => { muteSplashForNavigation(); closeMenu(); }}>
             <span className="nav-mark" aria-hidden="true" />
             <span>Josh Hatchard</span>
           </PageTransitionLink>
         ) : (
-          <a className="nav-wordmark" href="#hero" onClick={closeMenu}>
+          <a className="nav-wordmark" href="#hero" onClick={() => { muteSplashForNavigation(); closeMenu(); }}>
             <span className="nav-mark" aria-hidden="true" />
             <span>Josh Hatchard</span>
           </a>
@@ -167,8 +172,8 @@ export default function Navbar({ page = "home" }: NavbarProps) {
         </button>
         <div id="navigation-links" className="nav-links" onClick={closeMenu}>
           {navItems.map(({ id, label }) => isCaseStudy ? (
-            <PageTransitionLink key={id} href={hrefFor(id)} resetScroll={false}>{label}</PageTransitionLink>
-          ) : <a key={id} href={hrefFor(id)}>{label}</a>)}
+            <PageTransitionLink key={id} href={hrefFor(id)} resetScroll={false} onClick={muteSplashForNavigation}>{label}</PageTransitionLink>
+          ) : <a key={id} href={hrefFor(id)} onClick={muteSplashForNavigation}>{label}</a>)}
         </div>
       </nav>
     </header>

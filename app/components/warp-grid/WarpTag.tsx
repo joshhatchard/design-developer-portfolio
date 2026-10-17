@@ -25,7 +25,9 @@ export default function WarpTag({ children, className, parallax = false }: WarpT
       const width = Math.max(1, Math.ceil(bounds.width));
       const height = Math.max(1, Math.ceil(bounds.height));
       const padding = Number.parseFloat(style.paddingLeft) || 0;
-      const density = Math.min(window.devicePixelRatio || 1, 2);
+      // These labels are mapped into the WebGL scene, so give the texture
+      // extra source resolution before it is warped and downsampled.
+      const density = Math.min(Math.max(window.devicePixelRatio || 1, 2) * 2, 4);
       const canvas = document.createElement("canvas");
       canvas.width = width * density;
       canvas.height = height * density;

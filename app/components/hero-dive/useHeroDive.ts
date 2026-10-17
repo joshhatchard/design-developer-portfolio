@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useScrollRuntime } from "../warp-grid/ScrollProvider";
+import { PROJECT_RETURN_SCROLL_KEY } from "../PageTransition";
 import {
   boardAngle,
   clamp,
@@ -78,15 +79,11 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
 
       media.add(
         {
-          animated: "(min-width: 701px) and (prefers-reduced-motion: no-preference)",
+          animated: "(prefers-reduced-motion: no-preference)",
           reduced: "(prefers-reduced-motion: reduce)",
-          compact: "(max-width: 700px)",
         },
         (context) => {
           const animated = Boolean(context.conditions?.animated);
-          // A phone keeps the composed SVG hero without the long, pinned 3D
-          // dive. This removes the heaviest continuous scroll animation.
-          if (context.conditions?.compact) return;
           if (animated) hero.dataset.dive = "true";
 
           const scrollState = runtime.current;
@@ -114,6 +111,42 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
           let sceneX = 0,
             sceneY = 0,
             sceneScale = 1;
+          let splashSoundPlayed = false;
+          let hasInitialDiveProgress = false;
+          let previousDiveProgress = 0;
+          let hasRestoredPastWaterline = false;
+          let hasScrolledBackTowardHero = false;
+          let previousTouchY: number | null = null;
+          const trackTouchStart = (event: TouchEvent) => {
+            previousTouchY = event.touches[0]?.clientY ?? null;
+          };
+          // Restoration and refreshes may cross the waterline long after mount.
+          // Require a restored gallery position, an upward gesture, then a new
+          // downward gesture near the start of the hero. A quick downward scroll
+          // at the temporary mount position must never release the return lock.
+          const armReturnSplash = (event: Event) => {
+            if (!event.isTrusted || document.hidden || window.location.pathname !== "/") return;
+            if (window.sessionStorage.getItem(PROJECT_RETURN_SCROLL_KEY) !== null) return;
+            if (!hasInitialDiveProgress || !hasRestoredPastWaterline) return;
+            let direction = 0;
+            if (event instanceof WheelEvent) direction = Math.sign(event.deltaY);
+            if (event instanceof KeyboardEvent) {
+              if (["ArrowUp", "PageUp", "Home"].includes(event.key) || (event.key === " " && event.shiftKey)) direction = -1;
+              else if (["ArrowDown", "PageDown", " "].includes(event.key)) direction = 1;
+            }
+            if (event instanceof TouchEvent) {
+              const nextY = event.touches[0]?.clientY ?? null;
+              if (nextY !== null && previousTouchY !== null) direction = Math.sign(previousTouchY - nextY);
+              previousTouchY = nextY;
+            }
+            if (direction < 0) hasScrolledBackTowardHero = true;
+            if (direction <= 0 || !hasScrolledBackTowardHero || controller.progress > 0.1) return;
+            window.sessionStorage.removeItem("portfolio:skip-hero-splash-on-return");
+          };
+          window.addEventListener("touchstart", trackTouchStart, { passive: true });
+          window.addEventListener("wheel", armReturnSplash, { passive: true });
+          window.addEventListener("touchmove", armReturnSplash, { passive: true });
+          window.addEventListener("keydown", armReturnSplash);
           let badge = { left: 0, top: 0, width: 0, height: 0 };
           let labelInset = 16;
           let labelTop = 88;
@@ -270,6 +303,26 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
               // there is no held landing interval before the next section.
               controller.progress = scrollProgress.value;
               water.style.transform = "";
+              const navigationMuteUntil = Number(window.sessionStorage.getItem("portfolio:mute-hero-splash-until") ?? 0);
+              const suppressed = window.sessionStorage.getItem("portfolio:skip-hero-splash-on-return") === "true"
+                || window.sessionStorage.getItem(PROJECT_RETURN_SCROLL_KEY) !== null
+                || navigationMuteUntil > Date.now();
+              if (navigationMuteUntil <= Date.now()) window.sessionStorage.removeItem("portfolio:mute-hero-splash-until");
+              if (window.sessionStorage.getItem(PROJECT_RETURN_SCROLL_KEY) === null && controller.progress >= diveConfig.impact) {
+                hasRestoredPastWaterline = true;
+              }
+              if (!suppressed) {
+                const crossedWaterline = hasInitialDiveProgress
+                  && previousDiveProgress < diveConfig.impact
+                  && controller.progress >= diveConfig.impact;
+                if (crossedWaterline && !splashSoundPlayed) {
+                  splashSoundPlayed = true;
+                  window.dispatchEvent(new Event("hero-splash"));
+                }
+                if (controller.progress < diveConfig.impact - 0.05) splashSoundPlayed = false;
+              }
+              previousDiveProgress = controller.progress;
+              hasInitialDiveProgress = true;
             }
             const rect = hero.getBoundingClientRect();
             controller.stageTop = stage.getBoundingClientRect().top;
@@ -325,6 +378,10 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
 
           return () => {
             alive = false;
+            window.removeEventListener("wheel", armReturnSplash);
+            window.removeEventListener("touchstart", trackTouchStart);
+            window.removeEventListener("touchmove", armReturnSplash);
+            window.removeEventListener("keydown", armReturnSplash);
             tween?.kill();
             water.style.removeProperty("transform");
             window.removeEventListener("resize", refresh);

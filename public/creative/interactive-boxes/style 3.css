@@ -1,0 +1,23 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; }
+body { display: grid; grid-template-rows: minmax(0, 1fr) auto; overflow: hidden; background: #171717; color: #fff; font-family: Arial, Helvetica, sans-serif; }
+.game { position: relative; min-height: 0; }
+#game-canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: manipulation; cursor: crosshair; }
+#game-canvas:focus-visible { outline: 2px solid #d7ff00; outline-offset: -4px; }
+.status { position: absolute; top: 0.75rem; left: 0.75rem; margin: 0; padding: 0.4rem 0.55rem; background: rgb(0 0 0 / 42%); font-size: clamp(0.56rem, 1.2vw, 0.7rem); letter-spacing: 0.06em; text-transform: uppercase; pointer-events: none; }
+.controls { display: grid; gap: 0.55rem; padding: 0.65rem 0.85rem 0.8rem; background: #171717; border-top: 1px solid rgb(255 255 255 / 20%); font-size: clamp(0.55rem, 1.25vw, 0.68rem); letter-spacing: 0.055em; text-transform: uppercase; }
+.desktop-help { display: flex; flex-wrap: wrap; gap: 0.35rem 0.9rem; color: rgb(255 255 255 / 70%); }
+.desktop-help strong { color: #d7ff00; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+button { min-height: 2rem; padding: 0.35rem 0.55rem; border: 1px solid rgb(255 255 255 / 54%); border-radius: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+button:hover, button:focus-visible { background: #fff; color: #171717; outline: none; }
+button.reset { margin-left: auto; border-color: #d7ff00; color: #d7ff00; }
+button.reset:hover, button.reset:focus-visible { background: #d7ff00; color: #171717; }
+@media (max-width: 560px) {
+  .desktop-help { display: none; }
+  .controls { padding: 0.55rem; }
+  .actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  button { min-width: 0; padding-inline: 0.2rem; font-size: 0.55rem; }
+  button.reset { margin-left: 0; }
+}

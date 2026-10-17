@@ -3,14 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import styles from "./WorkShowcase.module.css";
 
-const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const clampRange = (value: number, minimum: number, maximum: number) => Math.min(maximum, Math.max(minimum, value));
-const mix = (from: number, to: number, amount: number) => Math.round(from + (to - from) * amount);
-const colour = (from: readonly number[], to: readonly number[], amount: number) =>
-  `rgb(${mix(from[0], to[0], amount)}, ${mix(from[1], to[1], amount)}, ${mix(from[2], to[2], amount)})`;
-// A short fade centred exactly on the viewport centre line.
-const sectionFade = (top: number, viewport: number) =>
-  clamp((viewport * 0.58 - top) / (viewport * 0.16));
 
 export default function WorkShowcase({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -19,9 +12,7 @@ export default function WorkShowcase({ children }: { children: ReactNode }) {
     const work = ref.current;
     const surface = work?.querySelector<HTMLElement>("[data-gallery-surface]");
     const canvas = surface?.querySelector<HTMLCanvasElement>("canvas");
-    const creative = work?.querySelector<HTMLElement>("#creative");
-    const about = work?.querySelector<HTMLElement>("#about");
-    if (!work || !surface || !canvas || !creative || !about) return;
+    if (!work || !surface || !canvas) return;
     if (window.matchMedia("(max-width: 700px)").matches) return;
 
     const context = canvas.getContext("2d");
@@ -33,15 +24,8 @@ export default function WorkShowcase({ children }: { children: ReactNode }) {
       const width = Math.round(surface.clientWidth);
       const height = Math.round(surface.clientHeight);
       const density = Math.min(window.devicePixelRatio || 1, 2);
-      const viewport = window.innerHeight;
-      const creativeProgress = sectionFade(creative.getBoundingClientRect().top, viewport);
-      const aboutProgress = sectionFade(about.getBoundingClientRect().top, viewport);
-      const background = aboutProgress > 0
-        ? colour([255, 255, 255], [17, 18, 13], aboutProgress)
-        : colour([17, 18, 13], [255, 255, 255], creativeProgress);
-      const grid = aboutProgress > 0
-        ? colour([218, 218, 211], [72, 73, 68], aboutProgress)
-        : colour([72, 73, 68], [218, 218, 211], creativeProgress);
+      const background = "rgb(17, 18, 13)";
+      const grid = "rgb(72, 73, 68)";
       const spacing = clampRange(width * 0.05, 40, 100);
       const key = `${width}:${height}:${density}:${background}:${grid}:${spacing}`;
       if (key === previousKey) return;

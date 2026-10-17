@@ -3,11 +3,12 @@ import styles from "./Creative.module.css";
 
 // Add more entries here; the grid creates new rows automatically.
 const creativeWork: CreativeWork[] = [
-  { title: "SUDATA merchandise", tag: "Graphic + product design", href: "/work/sudata-merchandise", src: "/projects/merch/thumbnail.jpg", alt: "SUDATA merchandise preview" },
-  { title: "SUDATA logo redesign", tag: "Branding", href: "/work/sudata-logo-redesign", src: "/projects/logo/thumbnail.jpg", alt: "SUDATA logo redesign preview" },
-  { title: "Poster series", tag: "Print", href: "/work/poster-series", src: "/creative/poster-series.svg", alt: "Pink poster placeholder numbered 01" },
-  { title: "Small symbols", tag: "Icons", href: "/work/small-symbols", src: "/creative/small-symbols.svg", alt: "Neutral icon placeholder with a star symbol" },
-  { title: "Colour study", tag: "Exploration", href: "/work/colour-study", src: "/creative/colour-study.svg", alt: "Yellow colour study placeholder with a circle" },
+  { title: "SUDATA logo redesign", year: "2026", tag: "Branding", href: "/work/sudata-logo-redesign", src: "/projects/previews/SUDATA%20LOGO.png", alt: "SUDATA logo redesign preview" },
+  { title: "StartUpLink merch", year: "2025", tag: "Apparel design", href: "/work/startuplink-merch", src: "/projects/previews/SUL%20MERCH.png", alt: "StartUpLink t-shirt with the graphic back print" },
+  { title: "Interactive boxes", year: "2025", tag: "Creative coding", href: "/work/interactive-boxes", src: "/projects/previews/INTERACTIVE%20BOXES.png", alt: "Interactive Boxes geometric tile composition" },
+  { title: "SUDATA merchandise", year: "2026", tag: "Graphic + product design", href: "/work/sudata-merchandise", src: "/projects/previews/SUDATA%20MERCH.png", alt: "SUDATA hoodie with the graphic back print" },
+  { title: "Theory & Culture Zine", year: "2024", tag: "Publication", href: "/work/theory-and-culture-zine", src: "/projects/previews/ZINE.png", alt: "Theory and Culture Zine cover" },
+  { title: "Photography", year: "2024–2026", tag: "Selected work", href: "/work/photography", src: "/projects/previews/PHOTOGRAPHY.png", alt: "Motorcyclist travelling along a forest road" },
 ];
 
 export default function Creative() {

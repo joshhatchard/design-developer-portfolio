@@ -43,7 +43,7 @@ export default function About({ children }: { children?: ReactNode }) {
           scrollTrigger: {
             trigger: grid,
             start: "top 58%",
-            toggleActions: "play none none reverse",
+            toggleActions: "play none none none",
           },
         });
       },
@@ -58,8 +58,8 @@ export default function About({ children }: { children?: ReactNode }) {
         <div className={styles.portraitColumn}>
           <figure className={styles.portrait}>
             <WarpImage
-              src="/about/portrait-placeholder.svg"
-              alt="Portrait placeholder — add your photo here"
+              src="/about/profile-image.jpg"
+              alt="Profile photo"
               width={800}
               height={800}
               className={styles.image}
@@ -69,10 +69,14 @@ export default function About({ children }: { children?: ReactNode }) {
         </div>
         <div className={styles.bio}>
           <p className={styles.intro} data-about-copy>
-            I’m a designer and developer exploring <span className={styles.accent}>bold ideas</span> at the edge of what <span className={styles.accent}>AI</span> makes possible.
+            I’m a designer and developer exploring{" "}
+            <span className={styles.accent}>bold ideas</span> at the edge of
+            what <span className={styles.accent}>AI</span> makes possible.
           </p>
           <p className={styles.background} data-about-copy>
-            Driven by curiosity and a love of the unfamiliar, I believe the best work comes from <span className={styles.accent}>stretching what’s known.</span>
+            Driven by curiosity and a love of the unfamiliar, I believe the best
+            work comes from{" "}
+            <span className={styles.accent}>stretching what’s known.</span>
           </p>
         </div>
       </div>
