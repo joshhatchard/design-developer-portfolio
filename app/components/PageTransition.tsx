@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type AnchorHTMLAttributes, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./PageTransition.module.css";
 
 type TransitionContextValue = {
@@ -10,33 +10,54 @@ type TransitionContextValue = {
 };
 
 const TransitionContext = createContext<TransitionContextValue | null>(null);
-const COVER_DURATION = 700;
-const REVEAL_DURATION = 700;
+const COVER_DURATION = 750;
+const REVEAL_DURATION = 750;
+const CONTENT_REVEAL_LEAD = 260;
+const ROUTE_REVEAL_TIMEOUT = 1800;
+export const PAGE_TRANSITION_CONTENT_REVEAL_EVENT = "portfolio:page-transition-content-reveal";
 export const PROJECT_RETURN_SCROLL_KEY = "portfolio:project-return-scroll";
 
 export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [phase, setPhase] = useState<"idle" | "covering" | "revealing">("idle");
   const phaseRef = useRef(phase);
   const coverTimer = useRef<number | null>(null);
   const revealTimer = useRef<number | null>(null);
+  const contentRevealTimer = useRef<number | null>(null);
+  const routeTimer = useRef<number | null>(null);
+  const pendingReveal = useRef<(() => void) | null>(null);
 
   const setTransitionPhase = useCallback((next: typeof phase) => {
     phaseRef.current = next;
+    document.documentElement.dataset.pageTransitionPhase = next;
     setPhase(next);
   }, []);
-  const begin = (action: () => void, beforeReveal?: () => void) => {
+  const reveal = useCallback(() => {
+    const beforeReveal = pendingReveal.current;
+    if (!beforeReveal || phaseRef.current !== "covering") return;
+    pendingReveal.current = null;
+    if (routeTimer.current) window.clearTimeout(routeTimer.current);
+    requestAnimationFrame(() => {
+      beforeReveal();
+      setTransitionPhase("revealing");
+      contentRevealTimer.current = window.setTimeout(
+        () => window.dispatchEvent(new Event(PAGE_TRANSITION_CONTENT_REVEAL_EVENT)),
+        REVEAL_DURATION - CONTENT_REVEAL_LEAD,
+      );
+      revealTimer.current = window.setTimeout(() => {
+        setTransitionPhase("idle");
+      }, REVEAL_DURATION);
+    });
+  }, [setTransitionPhase]);
+  const begin = (action: () => void, beforeReveal?: () => void, waitForRoute = true) => {
     if (phaseRef.current !== "idle") return;
     setTransitionPhase("covering");
     coverTimer.current = window.setTimeout(() => {
+      pendingReveal.current = beforeReveal ?? (() => undefined);
       action();
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          beforeReveal?.();
-          setTransitionPhase("revealing");
-          revealTimer.current = window.setTimeout(() => setTransitionPhase("idle"), REVEAL_DURATION);
-        });
-      });
+      if (waitForRoute) routeTimer.current = window.setTimeout(reveal, ROUTE_REVEAL_TIMEOUT);
+      else reveal();
     }, COVER_DURATION);
   };
   const navigate = (href: string, resetScroll = true, rememberPosition = false) => {
@@ -44,9 +65,11 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
       window.sessionStorage.setItem("portfolio:skip-hero-splash-on-return", "true");
     }
     if (rememberPosition) window.sessionStorage.setItem(PROJECT_RETURN_SCROLL_KEY, String(window.scrollY));
+    const destinationPath = href.split("#")[0];
     begin(
       () => router.push(href),
       resetScroll ? () => window.scrollTo({ top: 0, left: 0, behavior: "instant" }) : undefined,
+      destinationPath !== "" && destinationPath !== window.location.pathname,
     );
   };
   const goBack = (fallback: string) => {
@@ -59,15 +82,23 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     begin(() => router.push(fallback, { scroll: false }));
   };
 
+  useEffect(() => {
+    if (pendingReveal.current) reveal();
+  }, [pathname, reveal]);
+
   useEffect(() => () => {
     if (coverTimer.current) window.clearTimeout(coverTimer.current);
     if (revealTimer.current) window.clearTimeout(revealTimer.current);
+    if (contentRevealTimer.current) window.clearTimeout(contentRevealTimer.current);
+    if (routeTimer.current) window.clearTimeout(routeTimer.current);
   }, []);
 
   return (
     <TransitionContext.Provider value={{ navigate, goBack }}>
       {children}
-      <div className={styles.wipe} data-phase={phase} aria-hidden="true" />
+      <div className={styles.wipe} data-phase={phase} aria-hidden="true">
+        {Array.from({ length: 5 }, (_, index) => <span key={index} className={styles.curtain} />)}
+      </div>
     </TransitionContext.Provider>
   );
 }

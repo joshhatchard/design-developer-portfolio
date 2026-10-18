@@ -6,7 +6,7 @@ import { PageTransitionLink } from "./PageTransition";
 import styles from "./CaseStudies.module.css";
 
 const caseStudies = [
-  { number: "01", title: "Granic", year: "2025", type: "Product design", href: "/work/granic", src: "/projects/previews/granic.png", alt: "Granic deadline tracker preview", hoverDirection: 2 as const },
+  { number: "01", title: "Granic", year: "2026", type: "Product design", href: "/work/granic", src: "/projects/previews/granic.png", alt: "Granic deadline tracker preview", hoverDirection: 2 as const },
   { number: "02", title: "Designing for Country", year: "2025", type: "UI design + development", href: "/work/canvas", src: "/projects/previews/canvas.png", alt: "University of Sydney First Nations support page preview", hoverDirection: 3 as const },
 ];
 

@@ -27,7 +27,7 @@ const sudataLogoRedesign: CaseStudy = {
       type: "creative-content",
       id: "applications",
       label: "Identity applications",
-      container: { type: "gallery", images: applications },
+      container: { type: "gallery", images: applications, fullWidth: true },
     },
     { type: "next-project", id: "next-project", title: "Interactive Boxes", href: "/work/interactive-boxes" },
   ],

@@ -1,30 +1,42 @@
-@property --aperture-size {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 160vmax;
-}
-
 .wipe {
-  --aperture-size: 160vmax;
   position: fixed;
   z-index: 200;
   inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  overflow: hidden;
   pointer-events: none;
-  background: var(--primary);
-  -webkit-mask-image: radial-gradient(circle at center, transparent 0 var(--aperture-size), #000 calc(var(--aperture-size) + 1px));
-  mask-image: radial-gradient(circle at center, transparent 0 var(--aperture-size), #000 calc(var(--aperture-size) + 1px));
-  transition: --aperture-size 700ms var(--ease);
+  visibility: hidden;
 }
 
 .wipe[data-phase="covering"],
 .wipe[data-phase="revealing"] {
   pointer-events: auto;
+  visibility: visible;
 }
 
-.wipe[data-phase="covering"] { --aperture-size: 0px; }
+.curtain {
+  display: block;
+  width: calc(100% + 2px);
+  margin-inline: -1px;
+  background: var(--primary);
+  transform: translateY(-102%);
+  transition: transform 520ms cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+}
 
-.wipe[data-phase="revealing"] { --aperture-size: 160vmax; }
+.wipe[data-phase="covering"] .curtain { transform: translateY(0); }
+.wipe[data-phase="covering"] .curtain:nth-child(2) { transition-delay: 50ms; }
+.wipe[data-phase="covering"] .curtain:nth-child(3) { transition-delay: 100ms; }
+.wipe[data-phase="covering"] .curtain:nth-child(4) { transition-delay: 150ms; }
+.wipe[data-phase="covering"] .curtain:nth-child(5) { transition-delay: 200ms; }
+
+.wipe[data-phase="revealing"] .curtain { transform: translateY(102%); }
+.wipe[data-phase="revealing"] .curtain:nth-child(1) { transition-delay: 200ms; }
+.wipe[data-phase="revealing"] .curtain:nth-child(2) { transition-delay: 150ms; }
+.wipe[data-phase="revealing"] .curtain:nth-child(3) { transition-delay: 100ms; }
+.wipe[data-phase="revealing"] .curtain:nth-child(4) { transition-delay: 50ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  .wipe { transition-duration: 1ms; }
+  .curtain { transition-duration: 1ms; transition-delay: 0ms !important; }
 }

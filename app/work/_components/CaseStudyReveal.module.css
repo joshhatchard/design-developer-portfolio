@@ -1,0 +1,102 @@
+.root[data-reveal-ready="true"] > * {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(0.75rem);
+  will-change: opacity, filter, transform;
+}
+
+/* These wrappers become visible only once their child reveal targets have been
+   registered. The Decisions wrapper has independently observed children. */
+.root[data-reveal-ready="true"] > [data-case-reveal],
+.root[data-reveal-ready="true"] > [data-case-decision-list],
+.root[data-reveal-ready="true"] > [data-canvas-reflection] {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  will-change: auto;
+}
+
+.root[data-reveal-ready="true"] > [data-case-reveal] > * {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(0.75rem);
+  will-change: opacity, filter, transform;
+}
+
+/* Canvas Reflection has its own observer because its compact two-line layout
+   otherwise competes with the generic section reveal. */
+.root[data-reveal-ready="true"] > [data-canvas-reflection] > * {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(0.75rem);
+  will-change: opacity, filter, transform;
+}
+
+.root[data-reveal-ready="true"] > [data-canvas-reflection][data-reveal-state="visible"] > * {
+  animation: reveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.root[data-reveal-ready="true"] > [data-canvas-reflection][data-reveal-state="visible"] > :nth-child(2) { animation-delay: 180ms; }
+
+/* A fixed cursor preview lives inside the next-project link. Keeping this link
+   transform-free ensures its preview remains fixed to the viewport. */
+.root[data-reveal-ready="true"] > [data-case-reveal] > a {
+  filter: none;
+  transform: none;
+  will-change: opacity;
+}
+
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > * {
+  animation: reveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > a {
+  animation-name: revealLink;
+}
+
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > :nth-child(2) { animation-delay: 90ms; }
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > :nth-child(3) { animation-delay: 180ms; }
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > :nth-child(4) { animation-delay: 270ms; }
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > :nth-child(5) { animation-delay: 360ms; }
+.root[data-reveal-ready="true"] > [data-case-reveal][data-reveal-state="visible"] > :nth-child(6) { animation-delay: 450ms; }
+
+/* The Decisions heading and cards are observed independently. This avoids the
+   wrapper and first card competing to animate the same area on entry. */
+.root[data-reveal-ready="true"] [data-case-decision-heading],
+.root[data-reveal-ready="true"] [data-case-decision] > * {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(0.75rem);
+  will-change: opacity, filter, transform;
+}
+
+.root[data-reveal-ready="true"] [data-case-decision-heading][data-reveal-state="visible"],
+.root[data-reveal-ready="true"] [data-case-decision][data-reveal-state="visible"] > * {
+  animation: decisionReveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.root[data-reveal-ready="true"] [data-case-decision][data-reveal-state="visible"] > :nth-child(2) { animation-delay: 90ms; }
+.root[data-reveal-ready="true"] [data-case-decision][data-reveal-state="visible"] > :nth-child(3) { animation-delay: 180ms; }
+
+@keyframes reveal {
+  from { opacity: 0; filter: blur(4px); transform: translateY(0.75rem); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+@keyframes revealLink {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes decisionReveal {
+  from { opacity: 0; filter: blur(4px); transform: translateY(0.75rem); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-reveal-ready="true"] > [data-case-reveal] { opacity: 1; filter: none; transform: none; }
+  .root[data-reveal-ready="true"] > [data-case-reveal] > * { opacity: 1; filter: none; transform: none; }
+  .root[data-reveal-ready="true"] > [data-canvas-reflection] > * { opacity: 1; filter: none; transform: none; animation: none; }
+  .root[data-reveal-ready="true"] [data-case-decision-heading],
+  .root[data-reveal-ready="true"] [data-case-decision] > * { opacity: 1; filter: none; transform: none; animation: none; }
+}

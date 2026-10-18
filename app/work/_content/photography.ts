@@ -19,8 +19,8 @@ const photography: CaseStudy = {
   slug: "photography",
   title: "Photography",
   label: "Selected work",
-  year: "2024—2026",
-  date: "Ongoing archive",
+  year: "2026",
+  date: "2026",
   summary: "An ongoing record of atmosphere, architecture, and the small details that give a place its character.",
   blocks: [
     {
@@ -28,7 +28,7 @@ const photography: CaseStudy = {
       id: "overview",
       heading: "Photography",
       company: "Selected work",
-      date: "Ongoing archive",
+      date: "2026",
       overview: { heading: "Overview", body: "An ongoing record of atmosphere, architecture and the small details that give a place its character." },
     },
     {

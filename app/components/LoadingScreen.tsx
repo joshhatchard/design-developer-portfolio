@@ -20,7 +20,8 @@ import type { ScrollRuntime } from "./warp-grid/ScrollProvider";
 import styles from "./LoadingScreen.module.css";
 
 const MINIMUM_VISIBLE_MS = 1500;
-const FALLBACK_DISMISS_MS = 3500;
+const MINIMUM_MODEL_VISIBLE_MS = 650;
+const MAX_LOADING_MS = 2800;
 const EXIT_DURATION_MS = 420;
 const LOADER_INK: [number, number, number] = [17 / 255, 18 / 255, 14 / 255];
 const LOADER_PAPER: [number, number, number] = [1, 1, 1];
@@ -49,7 +50,10 @@ export default function LoadingScreen({ runtime }: Props) {
   // setup cannot leave the loading overlay permanently on screen.
   useEffect(() => {
     if (phase !== "loading") return;
-    const timer = window.setTimeout(() => setPhase("leaving"), FALLBACK_DISMISS_MS);
+    const timer = window.setTimeout(() => {
+      setReady(true);
+      setPhase("leaving");
+    }, MAX_LOADING_MS);
     return () => clearTimeout(timer);
   }, [phase]);
 
@@ -112,7 +116,8 @@ export default function LoadingScreen({ runtime }: Props) {
     // registered, leaving the splash screen permanently over the page.
     const forcedDismissal = window.setTimeout(() => {
       setPhase("leaving");
-    }, FALLBACK_DISMISS_MS);
+      setReady(true);
+    }, MAX_LOADING_MS);
 
     let renderer: WebGLRenderer;
     try {
@@ -122,6 +127,7 @@ export default function LoadingScreen({ runtime }: Props) {
       renderer = new WebGLRenderer({ canvas, alpha: true, antialias: !compactViewport });
     } catch {
       const leaveTimer = window.setTimeout(() => {
+        setReady(true);
         setPhase("leaving");
       }, 0);
       return () => {
@@ -143,28 +149,21 @@ export default function LoadingScreen({ runtime }: Props) {
     let active = true;
     let frame = 0;
     let model: Group | null = null;
-    let modelReady = false;
-    let documentReady = document.readyState === "complete";
     let dismissed = false;
 
-    const dismiss = () => {
+    const dismiss = (minimumVisibleMs = MINIMUM_VISIBLE_MS) => {
       if (dismissed) return;
       dismissed = true;
-      const delay = Math.max(0, MINIMUM_VISIBLE_MS - (performance.now() - startedAt));
+      const delay = Math.max(0, minimumVisibleMs - (performance.now() - startedAt));
       window.setTimeout(() => {
         if (!active) return;
         setPhase("leaving");
       }, delay);
     };
-    const checkReady = () => {
-      if (modelReady && documentReady) {
-        setReady(true);
-        dismiss();
-      }
-    };
-    const onPageLoad = () => {
-      documentReady = true;
-      checkReady();
+    const revealAfterModel = () => {
+      setReady(true);
+      const elapsed = performance.now() - startedAt;
+      dismiss(Math.max(MINIMUM_VISIBLE_MS, elapsed + MINIMUM_MODEL_VISIBLE_MS));
     };
     const resize = () => {
       const { width, height } = canvas.getBoundingClientRect();
@@ -174,8 +173,6 @@ export default function LoadingScreen({ runtime }: Props) {
     const observer = new ResizeObserver(resize);
     observer.observe(canvas);
     resize();
-    window.addEventListener("load", onPageLoad, { once: true });
-
     new GLTFLoader().load("/models/stickman.glb", (gltf) => {
       if (!active) {
         disposeModel(gltf.scene);
@@ -201,8 +198,7 @@ export default function LoadingScreen({ runtime }: Props) {
       model.position.copy(box.getCenter(new Vector3())).multiplyScalar(-scale);
       model.scale.setScalar(scale);
       spin.add(model);
-      modelReady = true;
-      checkReady();
+      revealAfterModel();
     }, undefined, () => {
       setReady(true);
       dismiss();
@@ -222,7 +218,6 @@ export default function LoadingScreen({ runtime }: Props) {
       cancelAnimationFrame(frame);
       clearTimeout(forcedDismissal);
       observer.disconnect();
-      window.removeEventListener("load", onPageLoad);
       if (model) disposeModel(model);
       material.dispose();
       renderer.dispose();

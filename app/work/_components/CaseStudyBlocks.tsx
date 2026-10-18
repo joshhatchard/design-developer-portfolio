@@ -2,7 +2,19 @@ import Image from "next/image";
 import TheoryCultureZine from "../../components/TheoryCultureZine";
 import type { CaseStudyBlock, CaseStudyMedia, CreativeContainer } from "../_content/types";
 import PhotographyMasonry from "./PhotographyMasonry";
+import NextProjectLink from "./NextProjectLink";
 import styles from "./CaseStudyLayout.module.css";
+
+const nextProjectPreviews: Record<string, { src: string; alt: string; ratio: string }> = {
+  "/work/granic": { src: "/projects/previews/granic.png", alt: "Granic case study preview", ratio: "8 / 5" },
+  "/work/canvas": { src: "/projects/previews/canvas.png", alt: "Designing for Country case study preview", ratio: "8 / 5" },
+  "/work/sudata-merchandise": { src: "/projects/previews/SUDATA%20MERCH.png", alt: "SUDATA merchandise case study preview", ratio: "1 / 1" },
+  "/work/sudata-logo-redesign": { src: "/projects/previews/SUDATA%20LOGO.png", alt: "SUDATA logo case study preview", ratio: "1 / 1" },
+  "/work/interactive-boxes": { src: "/projects/previews/INTERACTIVE%20BOXES.png", alt: "Interactive Boxes case study preview", ratio: "1 / 1" },
+  "/work/photography": { src: "/projects/previews/PHOTOGRAPHY.png", alt: "Photography case study preview", ratio: "1 / 1" },
+  "/work/startuplink-merch": { src: "/projects/previews/SUL%20MERCH.png", alt: "StartUpLink merchandise case study preview", ratio: "1 / 1" },
+  "/work/theory-and-culture-zine": { src: "/projects/previews/ZINE.png", alt: "Theory and Culture Zine case study preview", ratio: "1 / 1" },
+};
 
 function MediaFrame({ media }: { media: CaseStudyMedia }) {
   return (
@@ -13,6 +25,7 @@ function MediaFrame({ media }: { media: CaseStudyMedia }) {
           alt={media.alt ?? ""}
           width={media.width ?? 1600}
           height={media.height ?? 1000}
+          loading={media.loading}
           sizes="(max-width: 700px) 100vw, 42rem"
         />
       ) : (
@@ -26,12 +39,12 @@ function MediaFrame({ media }: { media: CaseStudyMedia }) {
 }
 
 function CreativeContainerFrame({ container }: { container: CreativeContainer }) {
-  if (container.type === "gallery") return <PhotographyMasonry images={container.images} />;
+  if (container.type === "gallery") return <PhotographyMasonry images={container.images} fullWidth={container.fullWidth} featuredFirst={container.featuredFirst} cropFeatured={container.cropFeatured} uniformTiles={container.uniformTiles} />;
   if (container.type === "zine") return <TheoryCultureZine />;
   return <iframe className={styles.interactiveFrame} src={`${container.src}?v=9`} title={container.title} />;
 }
 
-export function CaseStudyBlocks({ blocks }: { blocks: CaseStudyBlock[] }) {
+export function CaseStudyBlocks({ blocks, projectSlug }: { blocks: CaseStudyBlock[]; projectSlug: string }) {
   return blocks.map(block => {
     if (block.type === "intro") {
       return (
@@ -52,15 +65,19 @@ export function CaseStudyBlocks({ blocks }: { blocks: CaseStudyBlock[] }) {
     if (block.type === "heading-image") {
       return <section id={block.id} key={block.id} className={styles.headingImageBlock}><h2>{block.heading}</h2><p>{block.body}</p><MediaFrame media={block.media} /></section>;
     }
+    if (block.type === "heading-image-pair") {
+      return <section id={block.id} key={block.id} className={styles.headingImageBlock}><h2>{block.heading}</h2><p>{block.body}</p><div className={styles.mediaPair}>{block.media.map(media => <MediaFrame key={media.src ?? media.caption} media={media} />)}</div></section>;
+    }
     if (block.type === "heading") {
-      return <section id={block.id} key={block.id} className={styles.headingBlock}><h2>{block.heading}</h2><p>{block.body}</p></section>;
+      const isCanvasReflection = projectSlug === "canvas" && block.id === "reflection";
+      return <section id={block.id} key={block.id} className={styles.headingBlock} data-canvas-reflection={isCanvasReflection ? "" : undefined}><h2>{block.heading}</h2><p>{block.body}</p></section>;
     }
     if (block.type === "heading-list") {
       return (
-        <section id={block.id} key={block.id} className={styles.headingListBlock}>
-          <h2>{block.heading}</h2>
+        <section id={block.id} key={block.id} className={styles.headingListBlock} data-case-decision-list>
+          <h2 data-case-decision-heading>{block.heading}</h2>
           <div className={styles.headingListItems}>
-            {block.items.map(item => <article key={item.heading}><h3>{item.heading}</h3><p>{item.body}</p><MediaFrame media={item.media} /></article>)}
+            {block.items.map(item => <article key={item.heading} data-case-decision><h3>{item.heading}</h3><p>{item.body}</p><MediaFrame media={item.media} /></article>)}
           </div>
         </section>
       );
@@ -80,12 +97,13 @@ export function CaseStudyBlocks({ blocks }: { blocks: CaseStudyBlock[] }) {
     if (block.type === "creative-content") {
       return (
         <section id={block.id} key={block.id} className={styles.creativeContentBlock}>
-          <div className={styles.creativeContainer}><CreativeContainerFrame container={block.container} /></div>
+          <div className={`${styles.creativeContainer} ${block.container.type === "gallery" && block.container.fullWidth ? styles.creativeContainerFullWidth : ""}`}><CreativeContainerFrame container={block.container} /></div>
         </section>
       );
     }
     if (block.type === "next-project") {
-      return <section id={block.id} key={block.id} className={styles.nextProjectBlock}><p>{block.label ?? "Next project"}</p><a href={block.href}>{block.title} <span aria-hidden="true">↗</span></a></section>;
+      const preview = nextProjectPreviews[block.href];
+      return <section id={block.id} key={block.id} className={styles.nextProjectBlock}><p>{block.label ?? "Next project"}</p><NextProjectLink href={block.href} title={block.title} previewSrc={preview?.src} previewAlt={preview?.alt} previewRatio={preview?.ratio} /></section>;
     }
     if (block.type === "media") {
       return (

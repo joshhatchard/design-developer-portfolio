@@ -12,7 +12,7 @@ type Photograph = {
   height: number;
 };
 
-export default function PhotographyMasonry({ images }: { images: Photograph[] }) {
+export default function PhotographyMasonry({ images, fullWidth = false, featuredFirst = false, cropFeatured = false, uniformTiles = false }: { images: Photograph[]; fullWidth?: boolean; featuredFirst?: boolean; cropFeatured?: boolean; uniformTiles?: boolean }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const activeImage = activeIndex === null ? null : images[activeIndex];
@@ -39,10 +39,10 @@ export default function PhotographyMasonry({ images }: { images: Photograph[] })
 
   return (
     <>
-      <div className={styles.grid}>
+      <div className={`${styles.grid} ${fullWidth ? styles.gridFullWidth : ""} ${featuredFirst ? styles.gridFeatured : ""} ${cropFeatured ? styles.gridFeaturedCrop : ""} ${uniformTiles ? styles.gridUniformTiles : ""}`}>
         {images.map((image, index) => (
           <button key={image.src} type="button" className={styles.tile} onClick={() => openPreview(index)} aria-label={`Open preview: ${image.title}`}>
-            <Image src={image.src} alt={image.alt} width={image.width} height={image.height} priority={index < 2} sizes="(max-width: 700px) 50vw, 14rem" />
+            <Image src={image.src} alt={image.alt} width={image.width} height={image.height} priority={index < 2} sizes={fullWidth ? "(max-width: 700px) 50vw, 22rem" : "(max-width: 700px) 50vw, 14rem"} />
             <span className={styles.caption}><span>{String(index + 1).padStart(2, "0")}</span>{image.title}</span>
           </button>
         ))}

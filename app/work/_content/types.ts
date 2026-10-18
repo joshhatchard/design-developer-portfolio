@@ -3,6 +3,7 @@ export type CaseStudyMedia = {
   alt?: string;
   width?: number;
   height?: number;
+  loading?: "eager" | "lazy";
   caption: string;
   aspectRatio?: string;
 };
@@ -18,7 +19,7 @@ export type CaseStudyGalleryImage = {
 export type CreativeContainer =
   | { type: "interactive"; src: string; title: string }
   | { type: "zine" }
-  | { type: "gallery"; images: CaseStudyGalleryImage[] };
+  | { type: "gallery"; images: CaseStudyGalleryImage[]; fullWidth?: boolean; featuredFirst?: boolean; cropFeatured?: boolean; uniformTiles?: boolean };
 
 export type CaseStudyBlock =
   | {
@@ -32,6 +33,7 @@ export type CaseStudyBlock =
     overview: { heading: string; body: string };
   }
   | { type: "heading-image"; id: string; heading: string; body: string; media: CaseStudyMedia }
+  | { type: "heading-image-pair"; id: string; heading: string; body: string; media: [CaseStudyMedia, CaseStudyMedia] }
   | { type: "heading"; id: string; heading: string; body: string }
   | {
     type: "heading-list";

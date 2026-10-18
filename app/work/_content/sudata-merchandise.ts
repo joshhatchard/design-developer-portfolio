@@ -1,10 +1,11 @@
 import type { CaseStudy, CaseStudyGalleryImage } from "./types";
 
 const collection: CaseStudyGalleryImage[] = [
-  { src: "/projects/merch/shirtfront.jpg", alt: "SUDATA shirt front", title: "Shirt front", width: 2503, height: 2503 },
-  { src: "/projects/merch/shirtback.jpg", alt: "SUDATA shirt back", title: "Shirt back", width: 2503, height: 2503 },
-  { src: "/projects/merch/hoodiefront.jpg", alt: "SUDATA hoodie front", title: "Hoodie front", width: 2503, height: 2503 },
-  { src: "/projects/merch/hoodieback.jpg", alt: "SUDATA hoodie back", title: "Hoodie back", width: 2503, height: 2503 },
+  { src: "/projects/merch/1%20wide.png", alt: "SUDATA merchandise collection overview", title: "Merchandise collection", width: 1996, height: 1331 },
+  { src: "/projects/merch/2.png", alt: "SUDATA merchandise application 02", title: "Merchandise application", width: 980, height: 1331 },
+  { src: "/projects/merch/3.png", alt: "SUDATA merchandise application 03", title: "Merchandise application", width: 888, height: 1332 },
+  { src: "/projects/merch/4.png", alt: "SUDATA merchandise application 04", title: "Merchandise application", width: 1066, height: 1332 },
+  { src: "/projects/merch/5.png", alt: "SUDATA merchandise application 05", title: "Merchandise application", width: 978, height: 1332 },
 ];
 
 const sudataMerchandise: CaseStudy = {
@@ -27,7 +28,7 @@ const sudataMerchandise: CaseStudy = {
       type: "creative-content",
       id: "collection",
       label: "The collection",
-      container: { type: "gallery", images: collection },
+      container: { type: "gallery", images: collection, fullWidth: true, featuredFirst: true, uniformTiles: true },
     },
     { type: "next-project", id: "next-project", title: "SUDATA Logo Redesign", href: "/work/sudata-logo-redesign" },
   ],
