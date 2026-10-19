@@ -189,7 +189,9 @@ body {
   .navbar { padding-block: 0.5rem; }
   .navbar nav { flex-wrap: nowrap; gap: 1rem; }
   .navbar .nav-toggle {
-    margin-right: calc(env(safe-area-inset-right) - var(--page-gutter));
+    /* Align the visible 25px icon, not its 44px tap target, with the same
+       page gutter used by the left-hand wordmark. */
+    margin-right: calc((25px - 44px) / 2);
   }
   .nav-toggle {
     display: flex;

@@ -63,16 +63,16 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, useGSAP);
-    const lenis = enabled ? new Lenis({
+    // Native touch scrolling is the smoothest and most reliable mobile option.
+    // Lenis remains active for the desktop experience and programmatic links.
+    const compactViewport = window.matchMedia("(max-width: 700px)").matches;
+    const lenis = enabled && !compactViewport ? new Lenis({
       // Share GSAP's clock so the page, WebGL, and scroll animations stay aligned.
       autoRaf: false,
       smoothWheel: true,
       lerp: 0.075,
       wheelMultiplier: 0.95,
-      // Use the same smoothing on touch input so scroll-driven scenes stay
-      // aligned with the desktop experience.
-      syncTouch: true,
-      syncTouchLerp: 0.075,
+      syncTouch: false,
       stopInertiaOnNavigate: true,
       anchors: {
         lerp: 0,

@@ -47,8 +47,8 @@ export default function SiteAudio() {
 
   return (
     <>
-      <audio ref={backgroundMusicRef} src="/audio/xtreme-freddy-bit-beats-4.mp3" preload="auto" autoPlay loop />
-      <audio ref={splashMusicRef} src="/audio/water-splash-sound-effect.mp3" preload="auto" />
+      <audio ref={backgroundMusicRef} src="/audio/xtreme-freddy-bit-beats-4.mp3" preload="none" loop />
+      <audio ref={splashMusicRef} src="/audio/water-splash-sound-effect.mp3" preload="none" />
     </>
   );
 }
