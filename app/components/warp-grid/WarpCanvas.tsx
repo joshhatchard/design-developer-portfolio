@@ -24,7 +24,7 @@ class CanvasBoundary extends Component<{ children: ReactNode }, { failed: boolea
 // Add additional synced scene objects here; they share the same canvas and clock.
 function SceneObjects() {
   const { entries, runtime, motionEnabled } = useScrollRuntime();
-  const { gl, scene, camera, size } = useThree();
+  const { gl, scene, camera } = useThree();
   useEffect(() => {
     const render = () => {
       gl.autoClear = false;
@@ -38,9 +38,7 @@ function SceneObjects() {
     renderers.add(render);
     return () => { renderers.delete(render); };
   }, [gl, scene, camera, runtime]);
-  // On phones the hero is the only WebGL scene. Gallery cards stay as their
-  // native images, avoiding a separate texture and shader for every card.
-  return <><HeroDiver />{size.width > 700 && motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
+  return <><HeroDiver />{motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
 }
 
 export default function WarpCanvas() {
