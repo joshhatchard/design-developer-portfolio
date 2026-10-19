@@ -14,14 +14,16 @@ export default function SiteAudio() {
 
     backgroundMusic.volume = 0.3;
     splashMusic.volume = 0.4;
+    let audioUnlocked = false;
     const unlockAudio = () => {
-      backgroundMusic.play().catch(() => undefined);
+      audioUnlocked = true;
+      if (!document.hidden) backgroundMusic.play().catch(() => undefined);
       window.dispatchEvent(new Event("site-audio-enabled"));
     };
     const playSplashMusic = () => {
       const navigationMuteUntil = Number(window.sessionStorage.getItem("portfolio:mute-hero-splash-until") ?? 0);
       if (navigationMuteUntil <= Date.now()) window.sessionStorage.removeItem("portfolio:mute-hero-splash-until");
-      if (document.hidden || window.location.pathname !== "/"
+      if (!audioUnlocked || document.hidden || window.location.pathname !== "/"
         || window.sessionStorage.getItem("portfolio:skip-hero-splash-on-return") === "true"
         || window.sessionStorage.getItem(PROJECT_RETURN_SCROLL_KEY) !== null
         || navigationMuteUntil > Date.now()) return;
@@ -32,16 +34,10 @@ export default function SiteAudio() {
       if (document.hidden) {
         backgroundMusic.pause();
         splashMusic.pause();
-        return;
+      } else if (audioUnlocked) {
+        backgroundMusic.play().catch(() => undefined);
       }
-      // Resuming is allowed after the same browser gesture that unlocked the
-      // track initially; browsers that still block it simply keep it paused.
-      backgroundMusic.play().catch(() => undefined);
     };
-
-    // Some browsers allow audible autoplay for returning visitors. Others
-    // reject this promise until the first gesture, handled above.
-    backgroundMusic.play().catch(() => undefined);
 
     document.addEventListener("pointerdown", unlockAudio, { once: true, capture: true, passive: true });
     document.addEventListener("keydown", unlockAudio, { once: true, capture: true });
@@ -59,8 +55,8 @@ export default function SiteAudio() {
 
   return (
     <>
-      <audio ref={backgroundMusicRef} src="/audio/xtreme-freddy-bit-beats-4.mp3" preload="none" loop />
-      <audio ref={splashMusicRef} src="/audio/water-splash-sound-effect.mp3" preload="none" />
+      <audio ref={backgroundMusicRef} src="/audio/xtreme-freddy-bit-beats-4.mp3" preload="auto" autoPlay loop />
+      <audio ref={splashMusicRef} src="/audio/water-splash-sound-effect.mp3" preload="auto" />
     </>
   );
 }

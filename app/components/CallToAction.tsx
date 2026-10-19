@@ -94,8 +94,8 @@ export default function CallToAction() {
     if (!section) return;
     const compactViewport = window.matchMedia("(max-width: 700px)").matches;
     if (compactViewport) {
-      // Phones keep the same scroll story while the CTA model is loaded only
-      // when this section approaches the viewport.
+      // Phones keep the desktop's scroll story, but animate the existing SVG
+      // stickman instead of starting another WebGL renderer at the page end.
       const actor = section.querySelector<HTMLElement>("[data-cta-actor]")!;
       const colour = section.querySelector<HTMLElement>("[data-cta-colour]")!;
       const words = Array.from(section.querySelectorAll<HTMLElement>("[data-quote-words]"));

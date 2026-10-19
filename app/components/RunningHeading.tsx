@@ -60,7 +60,6 @@ export default function RunningHeading({ steps, children }: Props) {
       let nudging = false;
       const gridCanvas = surface.querySelector<HTMLCanvasElement>("[data-work-grid]");
       let gridFrame = 0;
-      let gridVisible = false;
       let gridWidth = 0;
       let gridHeight = 0;
       let lastGridKey = "";
@@ -114,14 +113,10 @@ export default function RunningHeading({ steps, children }: Props) {
         const bounds = surface.getBoundingClientRect();
         gridPointer.x = event.clientX - bounds.left;
         gridPointer.y = event.clientY - bounds.top;
-        scheduleGrid();
-      };
-      const scheduleGrid = () => {
-        if (gridVisible && !gridFrame) gridFrame = requestAnimationFrame(drawGrid);
       };
       const drawGrid = () => {
-        gridFrame = 0;
-        if (!gridCanvas || !gridVisible) return;
+        gridFrame = requestAnimationFrame(drawGrid);
+        if (!gridCanvas) return;
         const bounds = surface.getBoundingClientRect();
         if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
         const width = Math.round(bounds.width);
@@ -232,7 +227,6 @@ export default function RunningHeading({ steps, children }: Props) {
       };
       const render = () => {
         if (!alive || !work.isConnected || !heading.isConnected || !surface.isConnected) return;
-        scheduleGrid();
         if (locked) {
           if (Math.abs(window.scrollY - lockedY) > 1) {
             // Scrollbar drags and native scrolling do not emit wheel events.
@@ -385,11 +379,7 @@ export default function RunningHeading({ steps, children }: Props) {
       window.addEventListener("scroll", render, { passive: true });
       window.addEventListener("pointermove", trackGridHover, { passive: true });
       window.addEventListener("pointerleave", resetGridHover);
-      const gridVisibility = new IntersectionObserver(([entry]) => {
-        gridVisible = entry.isIntersecting;
-        if (gridVisible) scheduleGrid();
-      }, { rootMargin: "120px" });
-      gridVisibility.observe(surface);
+      gridFrame = requestAnimationFrame(drawGrid);
       return () => {
         alive = false;
         cancelNudge();
@@ -399,7 +389,6 @@ export default function RunningHeading({ steps, children }: Props) {
         window.removeEventListener("scroll", render);
         window.removeEventListener("pointermove", trackGridHover);
         window.removeEventListener("pointerleave", resetGridHover);
-        gridVisibility.disconnect();
         cancelAnimationFrame(gridFrame);
         release();
         trigger.kill(); timeline?.kill(); introExit?.kill(); colourTween?.kill();
