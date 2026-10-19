@@ -6,14 +6,14 @@ import NextProjectLink from "./NextProjectLink";
 import styles from "./CaseStudyLayout.module.css";
 
 const nextProjectPreviews: Record<string, { src: string; alt: string; ratio: string }> = {
-  "/work/granic": { src: "/projects/previews/granic.webp", alt: "Granic case study preview", ratio: "8 / 5" },
-  "/work/canvas": { src: "/projects/previews/canvas.webp", alt: "Designing for Country case study preview", ratio: "8 / 5" },
-  "/work/sudata-merchandise": { src: "/projects/previews/sudata-merch.webp", alt: "SUDATA merchandise case study preview", ratio: "1 / 1" },
-  "/work/sudata-logo-redesign": { src: "/projects/previews/sudata-logo.webp", alt: "SUDATA logo case study preview", ratio: "1 / 1" },
-  "/work/interactive-boxes": { src: "/projects/previews/interactive-boxes.webp", alt: "Interactive Boxes case study preview", ratio: "1 / 1" },
-  "/work/photography": { src: "/projects/previews/photography.webp", alt: "Photography case study preview", ratio: "1 / 1" },
-  "/work/startuplink-merch": { src: "/projects/previews/startuplink-shirts.webp", alt: "StartUpLink merchandise case study preview", ratio: "1 / 1" },
-  "/work/theory-and-culture-zine": { src: "/projects/previews/zine.webp", alt: "Theory and Culture Zine case study preview", ratio: "1 / 1" },
+  "/work/granic": { src: "/projects/previews/granic.png", alt: "Granic case study preview", ratio: "8 / 5" },
+  "/work/canvas": { src: "/projects/previews/canvas.png", alt: "Designing for Country case study preview", ratio: "8 / 5" },
+  "/work/sudata-merchandise": { src: "/projects/previews/SUDATA%20MERCH.png", alt: "SUDATA merchandise case study preview", ratio: "1 / 1" },
+  "/work/sudata-logo-redesign": { src: "/projects/previews/SUDATA%20LOGO.png", alt: "SUDATA logo case study preview", ratio: "1 / 1" },
+  "/work/interactive-boxes": { src: "/projects/previews/INTERACTIVE%20BOXES.png", alt: "Interactive Boxes case study preview", ratio: "1 / 1" },
+  "/work/photography": { src: "/projects/previews/PHOTOGRAPHY.png", alt: "Photography case study preview", ratio: "1 / 1" },
+  "/work/startuplink-merch": { src: "/projects/previews/SUL%20MERCH.png", alt: "StartUpLink merchandise case study preview", ratio: "1 / 1" },
+  "/work/theory-and-culture-zine": { src: "/projects/previews/ZINE.png", alt: "Theory and Culture Zine case study preview", ratio: "1 / 1" },
 };
 
 function MediaFrame({ media }: { media: CaseStudyMedia }) {

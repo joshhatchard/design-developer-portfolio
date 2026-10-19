@@ -57,9 +57,9 @@ export default function WarpCanvas() {
           orthographic
           camera={{ position: [0, 0, 1000], near: 0.1, far: 2000, zoom: 1 }}
           frameloop="never"
-          // Keep the native-scroll mobile scene responsive while the gallery
-          // cards are also participating in the shared WebGL renderer.
-          dpr={desktopMotion ? [1, 1.25] : [1, 1.25]}
+          // The phone scene only contains the hero figure, so it can use a
+          // sharper cap without paying for the desktop gallery shaders.
+          dpr={desktopMotion ? [1, 1.25] : [1, 1.5]}
           gl={{ alpha: true, antialias: true, toneMapping: NoToneMapping }}
           fallback={null}
           onCreated={({ gl }) => {

@@ -58,7 +58,7 @@ export default function About({ children }: { children?: ReactNode }) {
         <div className={styles.portraitColumn}>
           <figure className={styles.portrait}>
             <WarpImage
-              src="/about/profile-image.webp"
+              src="/about/profile-image.jpg"
               alt="Profile photo"
               width={800}
               height={800}
