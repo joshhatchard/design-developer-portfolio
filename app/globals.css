@@ -188,6 +188,9 @@ body {
   :root { --page-gutter: 1.25rem; }
   .navbar { padding-block: 0.5rem; }
   .navbar nav { flex-wrap: nowrap; gap: 1rem; }
+  .navbar .nav-toggle {
+    margin-right: calc(env(safe-area-inset-right) - var(--page-gutter));
+  }
   .nav-toggle {
     display: flex;
     flex-direction: column;
@@ -211,7 +214,7 @@ body {
   .nav-toggle span { transform-origin: center; }
   .navbar[data-menu-open="true"] .nav-toggle span:first-child { transform: translateY(4.5px) rotate(45deg); }
   .navbar[data-menu-open="true"] .nav-toggle span:last-child { transform: translateY(-4.5px) rotate(-45deg); }
-  .navbar[data-menu-visible="true"] { height: 100dvh; box-sizing: border-box; }
+  .navbar[data-menu-visible="true"] { height: 100svh; box-sizing: border-box; }
   .navbar .nav-links {
     position: absolute;
     z-index: 1;

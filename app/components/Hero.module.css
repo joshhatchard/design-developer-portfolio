@@ -242,10 +242,19 @@
 }
 
 @media (max-width: 700px) {
-  .stage { padding-bottom: 0.5rem; }
+  .stage {
+    height: 100svh;
+    min-height: 100svh;
+    padding-bottom: 0.5rem;
+  }
   .description { display: none; }
   .hero[data-hero-layout="stacked"] .layout {
+    grid-template-rows: auto minmax(0, min(60svh, calc((100vw - 2 * var(--page-gutter)) * 740 / 600)));
     gap: 0.5rem;
+  }
+  .hero[data-dive="true"] .stage {
+    height: 100svh;
+    min-height: 100svh;
   }
 }
 
