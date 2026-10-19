@@ -19,9 +19,6 @@ export default function WarpTag({ children, className, parallax = false }: WarpT
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    // Text remains a native DOM layer on phones. Mapping every label into a
-    // canvas texture adds GPU uploads without materially improving the warp.
-    if (window.matchMedia("(max-width: 700px)").matches) return;
     const updateTexture = () => {
       const bounds = element.getBoundingClientRect();
       const style = getComputedStyle(element);
@@ -54,7 +51,6 @@ export default function WarpTag({ children, className, parallax = false }: WarpT
 
   useEffect(() => {
     if (!ref.current || !src) return;
-    if (window.matchMedia("(max-width: 700px)").matches) return;
     return register({ id, src, element: ref.current, layer: 1 });
   }, [id, register, src]);
 

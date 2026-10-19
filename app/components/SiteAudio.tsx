@@ -28,6 +28,16 @@ export default function SiteAudio() {
       splashMusic.currentTime = 0;
       splashMusic.play().catch(() => undefined);
     };
+    const syncTabAudio = () => {
+      if (document.hidden) {
+        backgroundMusic.pause();
+        splashMusic.pause();
+        return;
+      }
+      // Resuming is allowed after the same browser gesture that unlocked the
+      // track initially; browsers that still block it simply keep it paused.
+      backgroundMusic.play().catch(() => undefined);
+    };
 
     // Some browsers allow audible autoplay for returning visitors. Others
     // reject this promise until the first gesture, handled above.
@@ -35,10 +45,12 @@ export default function SiteAudio() {
 
     document.addEventListener("pointerdown", unlockAudio, { once: true, capture: true, passive: true });
     document.addEventListener("keydown", unlockAudio, { once: true, capture: true });
+    document.addEventListener("visibilitychange", syncTabAudio);
     window.addEventListener("hero-splash", playSplashMusic);
     return () => {
       document.removeEventListener("pointerdown", unlockAudio, true);
       document.removeEventListener("keydown", unlockAudio, true);
+      document.removeEventListener("visibilitychange", syncTabAudio);
       window.removeEventListener("hero-splash", playSplashMusic);
       backgroundMusic.pause();
       splashMusic.pause();
