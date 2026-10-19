@@ -22,7 +22,7 @@ const sudataMerchandise: CaseStudy = {
       heading: "SUDATA Merchandise",
       company: "SUDATA",
       date: "May 2026",
-      overview: { heading: "Overview", body: "Designed to be worn with intent, the SUDATA collection puts the mascot front and centre. A sharp blue and white palette creates pieces that feel bold, unified and unmistakably SUDATA." },
+      overview: { heading: "Overview", body: "A hoodie and jacket range that puts SUDATA’s identity on the people who make the society. The team received the pieces, and the wider community can buy them." },
     },
     {
       type: "creative-content",

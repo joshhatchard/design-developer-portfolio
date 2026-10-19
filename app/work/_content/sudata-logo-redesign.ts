@@ -21,7 +21,7 @@ const sudataLogoRedesign: CaseStudy = {
       heading: "SUDATA Logo Redesign",
       company: "SUDATA",
       date: "April 2026",
-      overview: { heading: "Overview", body: "With more than 800 members, SUDATA had grown into a major student community, but its identity had not kept pace. The new logo brings together the precision of data science, the confidence of a professional organisation and the energy of community." },
+      overview: { heading: "Overview", body: "SUDATA had grown to more than 800 members, but its logo was outdated and had no graphic mark. I designed a modern, sleek graphic and text pair that’s instantly recognisable and finally matches the society’s scale and presence." },
     },
     {
       type: "creative-content",

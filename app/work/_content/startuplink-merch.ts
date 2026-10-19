@@ -20,7 +20,7 @@ const startuplinkMerch: CaseStudy = {
       heading: "StartUpLink Merch",
       company: "Apparel design",
       date: "2026",
-      overview: { heading: "Overview", body: "A compact apparel system for StartUpLink, pairing understated front marks with a graphic, high-energy back print." },
+      overview: { heading: "Overview", body: "Branded t-shirts for StartupLink, the University of Sydney society connecting founders and startups. The graphic captures a founder’s mindset, aiming above the rest, humbly, the way stars do." },
     },
     {
       type: "creative-content",

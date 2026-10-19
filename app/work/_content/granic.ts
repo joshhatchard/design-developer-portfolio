@@ -41,8 +41,8 @@ const granic: CaseStudy = {
           media: { src: "/projects/granic/demand.png", alt: "Granic landing page and waitlist sign-up", width: 1280, height: 633, caption: "The landing page hero and waitlist sign-up." },
         },
         {
-          heading: "2. Lead with the product, not a feature grid",
-          body: "A plain three-column feature grid looked boring, and it only described the product. I led the landing page with the product itself: an interactive version of the app shows each feature in use.",
+          heading: "2. Show the product straight away",
+          body: "I put an image preview of the app directly under the headline, with no fluff between the visitor and the product. An interactive demo follows, split into the three main features: adding deadlines, customising your view, and tracking with stats. Each tab has a few buttons to click through the process. A plain three-column feature grid only described the product and looked boring. Leading with the product means anyone who joins the waitlist does so because they want it, which makes signups a cleaner test of demand.",
           media: { src: "/projects/granic/product.png", alt: "Granic interactive product demonstration", width: 1280, height: 855, caption: "The live page: an interactive demo shows each feature in use." },
         },
         {
@@ -63,7 +63,7 @@ const granic: CaseStudy = {
       type: "heading-image",
       id: "outcome",
       heading: "Outcome",
-      body: "• Landing page and interactive product demo designed and built end to end.\n• Waitlist live at granic.app with about 12 signups before any marketing, against a target of 1,000. Early signal only.\n• People I’ve spoken to said they like the idea and would use it.",
+      body: "Granic is live at granic.app as a waitlist, with the design system, landing page and interactive demo all designed and built by me. About 12 people have signed up with no marketing yet, and the people I’ve spoken to say they like the idea and would use it. That’s early signal toward my target of 1,000, and it’s the reason I’m building the full app.",
       media: { src: "/projects/granic/outcome.png", alt: "Granic deadline tracker outcome", width: 1280, height: 885, caption: "The Granic deadline tracker." },
     },
     {

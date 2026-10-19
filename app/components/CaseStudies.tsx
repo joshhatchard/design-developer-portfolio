@@ -6,8 +6,8 @@ import { PageTransitionLink } from "./PageTransition";
 import styles from "./CaseStudies.module.css";
 
 const caseStudies = [
-  { number: "01", title: "Granic", year: "2026", type: "Product design", href: "/work/granic", src: "/projects/previews/granic.png", alt: "Granic deadline tracker preview", hoverDirection: 2 as const },
-  { number: "02", title: "Designing for Country", year: "2025", type: "UI design + development", href: "/work/canvas", src: "/projects/previews/canvas.png", alt: "University of Sydney First Nations support page preview", hoverDirection: 3 as const },
+  { number: "01", title: "USYD - Designing for Country", year: "2025", label: "DESIGN & DEVELOPMENT", href: "/work/canvas", src: "/projects/previews/canvas.png", alt: "University of Sydney First Nations support page preview", hoverDirection: 3 as const },
+  { number: "02", title: "Granic - Validating a SaaS", year: "2026", label: "DESIGN & DEVELOPMENT", href: "/work/granic", src: "/projects/previews/granic.png", alt: "Granic deadline tracker preview", hoverDirection: 2 as const },
 ];
 
 export default function CaseStudies() {
@@ -24,7 +24,7 @@ export default function CaseStudies() {
                   <WarpImage src={project.src} alt={project.alt} width={1600} height={1000} className={styles.image} hoverOverlay hoverDirection={project.hoverDirection} />
                 </div>
                 <WarpHoverMark direction={project.hoverDirection} />
-                <WarpTag className={styles.tag}>{project.type}</WarpTag>
+                <WarpTag className={styles.tag}>{project.label}</WarpTag>
                 <figcaption className={styles.caption}>
                   <h3 id={`project-${project.number}`}>{project.title}</h3>
                   <span className={styles.year}>{project.year}</span>

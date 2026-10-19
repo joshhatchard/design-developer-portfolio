@@ -14,7 +14,7 @@ const interactiveBoxes: CaseStudy = {
       heading: "Interactive Boxes",
       company: "Creative coding",
       date: "2025",
-      overview: { heading: "Overview", body: "A playful p5.js sketch where a field of geometric tiles can be split, merged, rotated and transformed in place." },
+      overview: { heading: "Overview", body: "A generative artwork built in code, where a grid of boxes splits, merges and rotates at the viewer’s touch, turning a simple shape into growth and decay. It explores the intersection of design and code, where simple rules generate the visuals." },
     },
     {
       type: "creative-content",

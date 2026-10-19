@@ -14,7 +14,7 @@ const theoryAndCultureZine: CaseStudy = {
       heading: "Theory & Culture Zine",
       company: "Publication",
       date: "2025",
-      overview: { heading: "Overview", body: "An editorial exploration of the theories, cultures and systems that shape design." },
+      overview: { heading: "Overview", body: "A 32-page zine exploring design theory and culture, designed for print and printed for a zine fair. The digital edition is here." },
     },
     {
       type: "creative-content",

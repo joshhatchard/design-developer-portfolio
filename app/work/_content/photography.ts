@@ -29,7 +29,7 @@ const photography: CaseStudy = {
       heading: "Photography",
       company: "Selected work",
       date: "2026",
-      overview: { heading: "Overview", body: "An ongoing record of atmosphere, architecture and the small details that give a place its character." },
+      overview: { heading: "Overview", body: "A personal collection, mainly from travel, shot and edited in Lightroom to capture places the way I saw them." },
     },
     {
       type: "creative-content",
