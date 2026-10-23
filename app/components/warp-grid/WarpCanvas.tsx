@@ -22,7 +22,7 @@ class CanvasBoundary extends Component<{ children: ReactNode }, { failed: boolea
 }
 
 // Add additional synced scene objects here; they share the same canvas and clock.
-function SceneObjects() {
+function SceneObjects({ desktopMotion }: { desktopMotion: boolean }) {
   const { entries, runtime, motionEnabled } = useScrollRuntime();
   const { gl, scene, camera } = useThree();
   useEffect(() => {
@@ -38,7 +38,9 @@ function SceneObjects() {
     renderers.add(render);
     return () => { renderers.delete(render); };
   }, [gl, scene, camera, runtime]);
-  return <><HeroDiver />{motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
+  // Native mobile scrolling must move images and text together. Fixed-canvas
+  // gallery copies can trail the browser's scroll compositor by a frame.
+  return <><HeroDiver />{desktopMotion && motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
 }
 
 export default function WarpCanvas() {
@@ -72,7 +74,7 @@ export default function WarpCanvas() {
             }, { once: true });
           }}
         >
-          <SceneObjects />
+          <SceneObjects desktopMotion={desktopMotion} />
         </Canvas>
       </div>
     </CanvasBoundary>
