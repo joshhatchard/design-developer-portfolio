@@ -209,7 +209,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem 2rem;
-  padding-block: 1.25rem;
+  padding-block: 1.75rem;
   border-top: 1px solid color-mix(in srgb, var(--ink) 28%, var(--paper));
   font-family: var(--font-label);
   font-size: 0.75rem;

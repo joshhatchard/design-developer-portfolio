@@ -6,7 +6,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { toCreasedNormals } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { createPoser } from "./hero-dive/poser";
 import { sampleDive } from "./hero-dive/divePose";
-import { createStickmanMaterial, disposeModel } from "./callToActionMaterial";
+import { createStickmanMaterial, disposeStickmanModel } from "./hero-dive/stickmanMaterial";
 import { useScrollRuntime } from "./warp-grid/ScrollProvider";
 
 const CTA_LIME_PALETTE = {
@@ -37,8 +37,6 @@ export default function CallToActionModel() {
     const headPivot = new Group();
     scene.add(spin);
     spin.add(headPivot);
-    // Keep the hand-drawn ink detail, but make the figure itself use the
-    // site primary colour throughout the CTA sequence.
     const material = createStickmanMaterial(renderer.getPixelRatio(), CTA_LIME_PALETTE);
     let active = true;
     let model: Group | null = null;
@@ -122,7 +120,7 @@ export default function CallToActionModel() {
     canvas.addEventListener("pointerup", endDrag);
     canvas.addEventListener("pointercancel", endDrag);
     new GLTFLoader().load("/models/stickman.glb", gltf => {
-      if (!active) { disposeModel(gltf.scene); return; }
+      if (!active) { disposeStickmanModel(gltf.scene); return; }
       model = gltf.scene;
       const poser = createPoser(model);
       poser.apply({ ...sampleDive(0), yaw: 0, hips: 0, spine: 0, head: 0, armRaise: 35, armSwing: 0, elbow: 0, spread: 32, thigh: 0, shin: 0, foot: 0 });
@@ -190,11 +188,6 @@ export default function CallToActionModel() {
       spin.rotation.x = renderedPitch;
       headPivot.rotation.x += ((-pointerY * 0.16 * idleAmount) - headPivot.rotation.x) * Math.min(1, delta * 10);
       headPivot.rotation.z += ((pointerX * -0.1 * idleAmount) - headPivot.rotation.z) * Math.min(1, delta * 10);
-      material.uniforms.uSeed.value = Math.floor(degrees / 8) % 64;
-      material.uniforms.uFlat.value = parseFloat(style.getPropertyValue("--cta-flat")) || 0;
-      material.uniforms.uFinal.value = actor.dataset.ctaPrimary === "true"
-        ? 1
-        : parseFloat(style.getPropertyValue("--cta-final")) || 0;
       renderer.render(scene, camera);
     };
     const renders = runtime.current.render;
@@ -217,7 +210,7 @@ export default function CallToActionModel() {
       delete actor.dataset.interactive;
       delete actor.dataset.dragging;
       delete actor.dataset.spinAngle;
-      if (model) disposeModel(model);
+      if (model) disposeStickmanModel(model);
       material.dispose();
       renderer.dispose();
     };

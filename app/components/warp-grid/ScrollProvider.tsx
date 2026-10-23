@@ -69,10 +69,10 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
       smoothWheel: true,
       lerp: 0.075,
       wheelMultiplier: 0.95,
-      // Use the same smoothing on touch input so scroll-driven scenes stay
-      // aligned with the desktop experience.
-      syncTouch: true,
-      syncTouchLerp: 0.075,
+      // Preserve the browser's native touch momentum. The shared GSAP tick
+      // still keeps scroll-driven WebGL scenes in sync without intercepting
+      // each swipe and making the page feel heavy on mobile.
+      syncTouch: false,
       stopInertiaOnNavigate: true,
       anchors: {
         lerp: 0,

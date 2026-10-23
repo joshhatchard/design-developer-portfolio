@@ -23,6 +23,7 @@ import { useScrollRuntime } from "../warp-grid/ScrollProvider";
 import { createPoser } from "./poser";
 import { boardDipPx, diveConfig, flight, smooth } from "./controller";
 import { sampleDive } from "./divePose";
+import { createStickmanMaterial } from "./stickmanMaterial";
 
 // Scroll-driven camera orbit around the diver for the whole dive.
 const ORBIT_TURNS = 1; // full 360° laps between ORBIT_START and ORBIT_END (use a whole number so it ends flat)
@@ -32,46 +33,7 @@ const ORBIT_START = 0.2; // progress where the orbit begins (matches camera foll
 const ORBIT_END = diveConfig.cameraNeutral; // progress where it finishes back on the flat 2D view
 const CAM_DIST = 1000;
 
-// Black & white pencil-sketch look (colours are authored in sRGB, 0..1).
-const INK_RGB: [number, number, number] = [17 / 255, 18 / 255, 13 / 255]; // #11120d
-const PAPER_RGB: [number, number, number] = [1, 1, 1]; // #ffffff
-const LIGHT_DIR: [number, number, number] = [-0.55, 0.75, 0.6]; // world-space light, so shading changes as the camera orbits
-const LINE_GAP = 6; // distance between hatch lines in CSS pixels (smaller = denser, darker)
-const OUTLINE = 0.3; // 0 = no outline, higher = thicker scribbled edge around the silhouette
 const BOIL_STEPS = 48; // how often the sketch lines redraw as you scroll (higher = more jittery "boil")
-
-const VERTEX = /* glsl */ `
-  varying vec3 vNormal;
-  #include <common>
-  #include <skinning_pars_vertex>
-  void main() {
-    #include <beginnormal_vertex>
-    #include <skinbase_vertex>
-    #include <skinnormal_vertex>
-    #include <defaultnormal_vertex>
-    vNormal = transformedNormal;
-    #include <begin_vertex>
-    #include <skinning_vertex>
-    #include <project_vertex>
-  }
-`;
-
-const FRAGMENT = /* glsl */ `
-  uniform vec3 uInk;
-  uniform vec3 uPaper;
-  uniform vec3 uLight;
-  varying vec3 vNormal;
-
-  void main() {
-    vec3 n = normalize(vNormal);
-    if (!gl_FrontFacing) n = -n;
-    vec3 light = normalize(mat3(viewMatrix) * uLight);
-    float amount = dot(n, light);
-    vec3 shade = amount > 0.38 ? uPaper : uInk;
-    float silhouette = 1.0 - smoothstep(0.17, 0.32, n.z);
-    gl_FragColor = vec4(mix(shade, uInk, silhouette), 1.0);
-  }
-`;
 
 function parseRgb(css: string, out: Vector3) {
   const m = css.match(/[\d.]+/g);
@@ -140,21 +102,7 @@ export default function HeroDiver() {
         modelHeight = bounds.max.y - bounds.min.y;
         const hips = poser.hips.getWorldPosition(new Vector3());
         hipRatio = (hips.y - bounds.min.y) / modelHeight;
-        {
-          skin = new ShaderMaterial({
-            vertexShader: VERTEX,
-            fragmentShader: FRAGMENT,
-            uniforms: {
-              uInk: { value: new Vector3(...INK_RGB) },
-              uPaper: { value: new Vector3(...PAPER_RGB) },
-              uLight: { value: new Vector3(...LIGHT_DIR).normalize() },
-              uPx: { value: gl.getPixelRatio() },
-              uGap: { value: LINE_GAP },
-              uOutline: { value: OUTLINE },
-              uSeed: { value: 0 },
-            },
-          });
-        }
+        skin = createStickmanMaterial(gl.getPixelRatio());
         const diverMaterial: Material = skin;
         root.traverse((object) => {
           if (object instanceof Mesh) {
