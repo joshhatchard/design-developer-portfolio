@@ -1,18 +1,11 @@
 @import "tailwindcss";
 
 /* Global entrance elements live outside the hero CSS-module subtree. */
-html[data-portfolio-ready="true"] .navbar[data-entrance="home"] {
-  animation: portfolio-nav-enter 0.9s var(--ease) both 0.1s;
-}
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-figure-ready="true"] {
   animation: portfolio-figure-land 0.65s cubic-bezier(.3, .7, .3, 1) both 0.35s;
 }
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-intro-skipped="true"] {
   animation: none !important;
-}
-@keyframes portfolio-nav-enter {
-  from { opacity: 0; transform: translateY(-14px); }
-  to { opacity: 1; transform: none; }
 }
 @keyframes portfolio-figure-land {
   0% { transform: translateY(-340px); opacity: 0; }
@@ -66,6 +59,8 @@ body {
   top: 0;
   inset-inline: 0;
   z-index: 50;
+  opacity: 1;
+  visibility: visible;
   background: transparent;
   color: var(--ink);
 }

@@ -25,7 +25,9 @@
   .toggle:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
 }
 .toggle:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.back { display: none; align-items: center; gap: 0.35rem; text-decoration: none; }
 
 @media (max-width: 700px) {
   .toggle { right: 1rem; bottom: 1rem; }
+  .back { display: inline-flex; }
 }

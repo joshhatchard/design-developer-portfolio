@@ -1,17 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { PROJECT_RETURN_SCROLL_KEY } from "./PageTransition";
+import { PageTransitionLink } from "./PageTransition";
 import styles from "./SiteAudio.module.css";
 
 const MUSIC_PREFERENCE_KEY = "portfolio:music-muted";
 
 export default function SiteAudio() {
+  const pathname = usePathname();
   const backgroundMusicRef = useRef<HTMLAudioElement>(null);
   const splashMusicRef = useRef<HTMLAudioElement>(null);
   const mutedRef = useRef(false);
   const audioUnlockedRef = useRef(false);
   const [isMuted, setIsMuted] = useState(false);
+  const isCaseStudy = pathname.startsWith("/work/");
 
   useEffect(() => {
     const backgroundMusic = backgroundMusicRef.current;
@@ -88,14 +92,20 @@ export default function SiteAudio() {
     <>
       <audio ref={backgroundMusicRef} src="/audio/xtreme-freddy-bit-beats-4.mp3" preload="none" loop />
       <audio ref={splashMusicRef} src="/audio/water-splash-sound-effect.mp3" preload="none" />
-      <button
-        className={styles.toggle}
-        type="button"
-        aria-pressed={!isMuted}
-        onClick={toggleMusic}
-      >
-        {isMuted ? "Sound off" : "Sound on"}
-      </button>
+      {isCaseStudy ? (
+        <PageTransitionLink className={`${styles.toggle} ${styles.back}`} href="/" resetScroll={false}>
+          <span aria-hidden="true">←</span> Back
+        </PageTransitionLink>
+      ) : (
+        <button
+          className={styles.toggle}
+          type="button"
+          aria-pressed={!isMuted}
+          onClick={toggleMusic}
+        >
+          {isMuted ? "Sound off" : "Sound on"}
+        </button>
+      )}
     </>
   );
 }
