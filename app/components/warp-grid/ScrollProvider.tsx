@@ -63,6 +63,7 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, useGSAP);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     const lenis = enabled ? new Lenis({
       // Share GSAP's clock so the page, WebGL, and scroll animations stay aligned.
       autoRaf: false,
@@ -136,7 +137,14 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
     lenis?.on("scroll", ScrollTrigger.update);
     gsap.ticker.lagSmoothing(0);
     gsap.ticker.add(tick);
-    window.addEventListener("resize", scheduleRefresh);
+    let viewportWidth = window.innerWidth;
+    const onViewportResize = () => {
+      const width = window.innerWidth;
+      const toolbarOnly = window.matchMedia("(pointer: coarse)").matches && width === viewportWidth;
+      viewportWidth = width;
+      if (!toolbarOnly) scheduleRefresh();
+    };
+    window.addEventListener("resize", onViewportResize);
     const observer = new ResizeObserver(scheduleRefresh);
     observer.observe(document.body);
     document.fonts.ready.then(scheduleRefresh);
@@ -146,7 +154,7 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
       cancelAnimationFrame(refreshFrame);
       document.removeEventListener("click", navigateToWork, true);
       observer.disconnect();
-      window.removeEventListener("resize", scheduleRefresh);
+      window.removeEventListener("resize", onViewportResize);
       gsap.ticker.remove(tick);
       lenis?.off("scroll", ScrollTrigger.update);
       lenis?.destroy();

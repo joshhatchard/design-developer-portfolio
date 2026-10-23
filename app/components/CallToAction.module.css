@@ -282,13 +282,14 @@
 
   /* Keep the desktop scroll story at a phone-friendly scale. */
   .section[data-animated="true"] { height: 440svh; }
+  .ctaAnchor { top: calc(100% - 100lvh); }
   .section[data-animated="true"] .stage {
     display: grid;
     position: sticky;
     top: 0;
-    /* Keep the pinned story stable while browser chrome expands or collapses. */
-    height: 100svh;
-    min-height: 100svh;
+    /* Cover the largest viewport without resizing as browser controls toggle. */
+    height: 100lvh;
+    min-height: 100lvh;
     padding: 0;
     overflow: hidden;
     gap: 0;
@@ -309,7 +310,7 @@
     display: flex;
     align-self: stretch;
     width: 100%;
-    height: 100svh;
+    height: 100lvh;
     padding-inline: var(--page-gutter);
     justify-content: center;
   }

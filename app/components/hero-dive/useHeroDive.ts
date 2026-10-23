@@ -44,9 +44,19 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
       const starbursts = Array.from(splash.querySelectorAll<SVGGElement>("[data-splash-starburst]"));
       const particles = Array.from(splash.querySelectorAll<SVGGElement>("[data-splash-particle]"));
       const media = gsap.matchMedia();
+      let layoutWidth = document.documentElement.clientWidth;
+      let layoutHeight = window.innerHeight;
+      const stableLayoutHeight = () => {
+        const width = document.documentElement.clientWidth;
+        if (!window.matchMedia("(pointer: coarse)").matches || width !== layoutWidth) {
+          layoutWidth = width;
+          layoutHeight = window.innerHeight;
+        }
+        return layoutHeight;
+      };
       const setResponsiveLayout = () => {
         const width = document.documentElement.clientWidth;
-        const height = window.innerHeight;
+        const height = stableLayoutHeight();
         const navHeight = document.querySelector(".navbar")?.getBoundingClientRect().height ?? 72;
         const edgeSpace = width <= 700 ? 8 : 16;
         hero.style.setProperty("--hero-nav-space", `${navHeight + edgeSpace}px`);
@@ -160,7 +170,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             if (animated) {
               hero.style.setProperty(
                 "--hero-scroll-height",
-                `${controller.height * diveConfig.stageHeights}px`,
+                `${stableLayoutHeight() * diveConfig.stageHeights}px`,
               );
             }
             const rect = svg.getBoundingClientRect();
@@ -350,7 +360,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
                   trigger: hero,
                   start: "top top",
                   end: () =>
-                    `+=${controller.height * diveConfig.stageHeights}`,
+                    `+=${stableLayoutHeight() * diveConfig.stageHeights}`,
                   scrub: true,
                   invalidateOnRefresh: true,
                   onRefresh: measure,
@@ -362,7 +372,14 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             measure();
             ScrollTrigger.refresh();
           };
-          window.addEventListener("resize", refresh);
+          let resizeWidth = window.innerWidth;
+          const onViewportResize = () => {
+            const width = window.innerWidth;
+            const toolbarOnly = window.matchMedia("(pointer: coarse)").matches && width === resizeWidth;
+            resizeWidth = width;
+            if (!toolbarOnly) refresh();
+          };
+          window.addEventListener("resize", onViewportResize);
           const sceneObserver = new ResizeObserver(() => {
             measure();
             update();
@@ -384,7 +401,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             window.removeEventListener("keydown", armReturnSplash);
             tween?.kill();
             water.style.removeProperty("transform");
-            window.removeEventListener("resize", refresh);
+            window.removeEventListener("resize", onViewportResize);
             sceneObserver.disconnect();
             scrollState.heroes.delete(controller);
             scrollState.update.delete(update);
