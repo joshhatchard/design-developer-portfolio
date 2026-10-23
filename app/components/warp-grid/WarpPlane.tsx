@@ -24,7 +24,6 @@ export default function WarpPlane({ entry }: { entry: WarpEntry }) {
     let hoverActive = false;
     let hoverTween: gsap.core.Tween | null = null;
     let sourceAspect = 1;
-    const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     let nearViewport = false;
     let rect = { left: 0, top: 0, width: 0, height: 0 };
     // The warp is linear across X; only Y needs subdivisions for the curve.
@@ -130,7 +129,7 @@ export default function WarpPlane({ entry }: { entry: WarpEntry }) {
     resizePlane.current = measure;
     const update = () => {
       if (!nearViewport) { mesh.visible = false; return; }
-      const nextHoverActive = Boolean(hoverTarget?.matches(supportsHover ? ":hover, :focus-visible" : ":focus-visible"));
+      const nextHoverActive = Boolean(hoverTarget?.matches(":hover, :focus-visible"));
       if (nextHoverActive !== hoverActive) {
         hoverActive = nextHoverActive;
         hoverTween?.kill();

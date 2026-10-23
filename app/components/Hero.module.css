@@ -206,10 +206,7 @@
 .primary { background: var(--ink); color: var(--paper); }
 .secondary { background: transparent; }
 
-.actions a:focus-visible { background: var(--primary); color: var(--ink); outline: 2px solid var(--ink); outline-offset: 3px; }
-@media (hover: hover) and (pointer: fine) {
-  .actions a:hover { background: var(--primary); color: var(--ink); outline: 2px solid var(--ink); outline-offset: 3px; }
-}
+.actions a:hover, .actions a:focus-visible { background: var(--primary); color: var(--ink); outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* Both compositions share one viewport-sized stage. */
 .stage {

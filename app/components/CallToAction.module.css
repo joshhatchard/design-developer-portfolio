@@ -193,13 +193,9 @@
   transform-origin: left;
   transition: transform 320ms var(--ease);
 }
-.contactLinks a:focus-visible { color: var(--ink); }
-.contactLinks a:focus-visible::before { transform: scaleX(1); }
+.contactLinks a:hover, .contactLinks a:focus-visible { color: var(--ink); }
+.contactLinks a:hover::before, .contactLinks a:focus-visible::before { transform: scaleX(1); }
 .contactLinks a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-@media (hover: hover) and (pointer: fine) {
-  .contactLinks a:hover { color: var(--ink); }
-  .contactLinks a:hover::before { transform: scaleX(1); }
-}
 
 .contactLinks a[aria-disabled="true"] { color: color-mix(in srgb, var(--ink) 55%, var(--paper)); }
 .contactLinks [data-cta-letter] { display: inline-block; }
