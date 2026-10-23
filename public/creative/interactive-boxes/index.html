@@ -5,16 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.5/lib/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/addons/p5.sound.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=13">
     <title>Interactive Boxes</title>
   </head>
   <body>
     <main aria-label="Interactive geometric tile canvas"></main>
     <aside class="controls" aria-label="Interactive Boxes controls">
-      <p class="desktop-controls">Click to split · right-click to merge · arrow keys to rotate or change shapes</p>
-      <p class="mobile-controls">Tap to split · two-finger tap to merge · swipe ↑↓ to rotate · swipe ←→ to change shape</p>
+      <div class="control-guide">
+        <span class="control-label">Controls</span>
+        <ul class="desktop-controls">
+          <li><span>Split</span><kbd>Click</kbd></li>
+          <li><span>Merge</span><kbd>Right-click</kbd></li>
+          <li><span>Rotate</span><kbd>↑ ↓</kbd></li>
+          <li><span>Change shape</span><kbd>← →</kbd></li>
+        </ul>
+        <ul class="mobile-controls">
+          <li><span>Split</span><kbd>Tap</kbd></li>
+          <li><span>Merge</span><kbd>Two-finger tap</kbd></li>
+          <li><span>Rotate</span><kbd>Swipe ↑ ↓</kbd></li>
+          <li><span>Change shape</span><kbd>Swipe ← →</kbd></li>
+        </ul>
+      </div>
       <button type="button" id="reset">Reset</button>
     </aside>
-    <script src="sketch.js?v=9"></script>
+    <script src="sketch.js?v=13"></script>
   </body>
 </html>

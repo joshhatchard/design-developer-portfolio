@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PageTransitionLink } from "./PageTransition";
+import { HOME_ANCHOR_KEY, PageTransitionLink } from "./PageTransition";
 
 type NavbarProps = {
   page?: "home" | "case-study";
@@ -31,6 +31,10 @@ export default function Navbar({ page = "home" }: NavbarProps) {
     // Anchor navigation can cross the dive impact point without the visitor
     // intentionally performing the dive gesture.
     window.sessionStorage.setItem("portfolio:mute-hero-splash-until", String(Date.now() + 6000));
+  };
+  const prepareHomeAnchor = (id: string) => {
+    window.sessionStorage.setItem(HOME_ANCHOR_KEY, id);
+    muteSplashForNavigation();
   };
   const openMenu = () => {
     if (menuExitTimer.current) window.clearTimeout(menuExitTimer.current);
@@ -157,7 +161,7 @@ export default function Navbar({ page = "home" }: NavbarProps) {
     <header ref={ref} className="navbar" data-entrance={isCaseStudy ? undefined : "home"} data-surface={isCaseStudy ? "case-study" : undefined} data-menu-open={menuOpen} data-menu-visible={menuVisible}>
       <nav className="siteContainer" aria-label="Main navigation">
         {isCaseStudy ? (
-          <PageTransitionLink className="nav-wordmark" href="/" onClick={() => { muteSplashForNavigation(); closeMenu(); }}>
+          <PageTransitionLink className="nav-wordmark" href="/#hero" onClick={() => { prepareHomeAnchor("hero"); closeMenu(); }}>
             <span className="nav-mark" aria-hidden="true" />
             <span>Josh Hatchard</span>
           </PageTransitionLink>
@@ -172,7 +176,7 @@ export default function Navbar({ page = "home" }: NavbarProps) {
         </button>
         <div id="navigation-links" className="nav-links" onClick={closeMenu}>
           {navItems.map(({ id, label }) => isCaseStudy ? (
-            <PageTransitionLink key={id} href={hrefFor(id)} resetScroll={false} onClick={muteSplashForNavigation}>{label}</PageTransitionLink>
+            <PageTransitionLink key={id} href={hrefFor(id)} resetScroll={false} onClick={() => prepareHomeAnchor(id)}>{label}</PageTransitionLink>
           ) : <a key={id} href={hrefFor(id)} onClick={muteSplashForNavigation}>{label}</a>)}
         </div>
       </nav>

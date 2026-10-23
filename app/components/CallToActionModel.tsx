@@ -152,9 +152,14 @@ export default function CallToActionModel() {
     const visibility = new IntersectionObserver(([entry]) => {
       nearViewport = entry.isIntersecting;
     }, { rootMargin: "100px" });
-    visibility.observe(actor.closest("section")!);
+    visibility.observe(actor);
     const render = () => {
-      if (!model || !nearViewport) return;
+      const bounds = actor.getBoundingClientRect();
+      const actorIsNearViewport = bounds.bottom > -100 && bounds.top < window.innerHeight + 100;
+      // A direct anchor jump can occur before IntersectionObserver delivers
+      // its first callback. Checking the actor's actual bounds here ensures
+      // the CTA figure draws on that first visible frame.
+      if (!model || (!nearViewport && !actorIsNearViewport)) return;
       const style = getComputedStyle(actor);
       const idleAmount = Math.max(0, Math.min(1, parseFloat(style.getPropertyValue("--cta-idle")) || 0));
       // Keep pointer eligibility current even while skipping hidden GPU work.

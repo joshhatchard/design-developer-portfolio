@@ -1,6 +1,9 @@
 .toggle {
   position: fixed;
   z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   right: max(1rem, env(safe-area-inset-right));
   bottom: max(1rem, env(safe-area-inset-bottom));
   min-height: 2.75rem;
@@ -13,6 +16,7 @@
   cursor: pointer;
   font: 400 0.7rem/1 var(--font-label);
   letter-spacing: 0.07em;
+  text-align: center;
   text-transform: uppercase;
   transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
@@ -26,8 +30,10 @@
 }
 .toggle:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
 .back { display: none; align-items: center; gap: 0.35rem; text-decoration: none; }
+.caseStudySound { display: inline-flex; }
 
 @media (max-width: 700px) {
   .toggle { right: 1rem; bottom: 1rem; }
   .back { display: inline-flex; }
+  .caseStudySound { display: none; }
 }

@@ -188,7 +188,16 @@ export default function CallToAction() {
         contactReveal.play(0);
       }
     }, undefined, revealCta + 1.1);
+    const syncAfterAnchorNavigation = () => {
+      ScrollTrigger.refresh();
+      timeline.scrollTrigger?.update();
+      // Contact navigation lands directly in the CTA's settled state. Keep
+      // the actor visible while its WebGL model finishes loading and draws.
+      if (window.location.hash === "#cta") gsap.set(actor, { autoAlpha: 1 });
+    };
+    window.addEventListener("portfolio:home-anchor-restored", syncAfterAnchorNavigation);
     return () => {
+      window.removeEventListener("portfolio:home-anchor-restored", syncAfterAnchorNavigation);
       contactReveal.kill();
       timeline.scrollTrigger?.kill();
       timeline.kill();

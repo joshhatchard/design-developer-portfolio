@@ -16,6 +16,7 @@ const CONTENT_REVEAL_LEAD = 260;
 const ROUTE_REVEAL_TIMEOUT = 1800;
 export const PAGE_TRANSITION_CONTENT_REVEAL_EVENT = "portfolio:page-transition-content-reveal";
 export const PROJECT_RETURN_SCROLL_KEY = "portfolio:project-return-scroll";
+export const HOME_ANCHOR_KEY = "portfolio:home-anchor";
 
 export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();

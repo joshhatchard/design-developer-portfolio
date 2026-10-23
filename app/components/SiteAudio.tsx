@@ -92,20 +92,19 @@ export default function SiteAudio() {
     <>
       <audio ref={backgroundMusicRef} src="/audio/xtreme-freddy-bit-beats-4.mp3" preload="none" loop />
       <audio ref={splashMusicRef} src="/audio/water-splash-sound-effect.mp3" preload="none" />
-      {isCaseStudy ? (
+      {isCaseStudy && (
         <PageTransitionLink className={`${styles.toggle} ${styles.back}`} href="/" resetScroll={false}>
           <span aria-hidden="true">←</span> Back
         </PageTransitionLink>
-      ) : (
-        <button
-          className={styles.toggle}
-          type="button"
-          aria-pressed={!isMuted}
-          onClick={toggleMusic}
-        >
-          {isMuted ? "Sound off" : "Sound on"}
-        </button>
       )}
+      <button
+        className={`${styles.toggle} ${isCaseStudy ? styles.caseStudySound : ""}`}
+        type="button"
+        aria-pressed={!isMuted}
+        onClick={toggleMusic}
+      >
+        {isMuted ? "Sound off" : "Sound on"}
+      </button>
     </>
   );
 }

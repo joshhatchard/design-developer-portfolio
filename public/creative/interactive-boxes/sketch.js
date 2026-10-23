@@ -14,6 +14,20 @@ let touchTarget = null;
 let lastTouchAt = 0;
 let pointer = { x: -1, y: -1 };
 let selectedCell = null;
+let canvasResizeObserver = null;
+
+function getCanvasSize() {
+  const host = document.querySelector('main');
+  return { width: host.clientWidth, height: host.clientHeight };
+}
+
+function resizeSketch() {
+  if (!canvas) return;
+  const { width: canvasWidth, height: canvasHeight } = getCanvasSize();
+  if (canvasWidth > 0 && canvasHeight > 0 && (width !== canvasWidth || height !== canvasHeight)) {
+    resizeCanvas(canvasWidth, canvasHeight);
+  }
+}
 
 function getGridLayout() {
   const cellSize = min(width / 2, height / 2) - 40;
@@ -102,7 +116,9 @@ function preload() {
 // Setup (runs once at start)
 // ==============================
 function setup() {
-  canvas = createCanvas(windowWidth, windowHeight); // Create full-window canvas
+  const { width: canvasWidth, height: canvasHeight } = getCanvasSize();
+  canvas = createCanvas(canvasWidth, canvasHeight); // Fill the space above the controls
+  canvas.parent(document.querySelector('main'));
   canvas.elt.oncontextmenu = () => false; // Disable right-click context menu on canvas
   canvas.elt.tabIndex = 0;
   canvas.elt.addEventListener('pointermove', updatePointer);
@@ -111,12 +127,19 @@ function setup() {
   canvas.elt.addEventListener('pointerdown', handlePointerDown);
   canvas.elt.addEventListener('keydown', handleKeyboard);
 
+  canvasResizeObserver = new ResizeObserver(resizeSketch);
+  canvasResizeObserver.observe(document.querySelector('main'));
+
   colorMode(HSB, 360, 100, 100); // Use Hue-Saturation-Brightness color mode
   noStroke(); // Disable outline strokes
   hueBase = random(360); // Pick a random hue base for the color palette
 
   resetSketch();
   document.getElementById('reset').addEventListener('click', resetSketch);
+}
+
+function windowResized() {
+  resizeSketch();
 }
 
 // ==============================
