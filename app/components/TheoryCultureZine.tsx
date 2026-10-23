@@ -20,6 +20,9 @@ const pages: ZinePage[] = [
 
 const sourceFiles = ["publication.html", ...Array.from({ length: 16 }, (_, index) => `publication-${index + 1}.html`)];
 const readerPath = "/creative/theory-and-culture-zine/reader/publication-web-resources";
+const mobilePageWidth = 336;
+const mobilePageHeight = 473;
+const pageAspectRatio = 420 / 298;
 
 const ZineLeaf = forwardRef<HTMLDivElement, { page: ZinePage; markup: string }>(function ZineLeaf({ page, markup }, ref) {
   return (
@@ -33,6 +36,8 @@ export default function TheoryCultureZine() {
   const reader = useRef<HTMLDivElement>(null);
   const book = useRef<{ pageFlip: () => { flipNext: () => void; flipPrev: () => void; getBoundsRect: () => { pageWidth: number } } | undefined }>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [compactViewport, setCompactViewport] = useState(false);
+  const [availableWidth, setAvailableWidth] = useState(0);
   const [isTurning, setIsTurning] = useState(false);
   const [isLandscape, setIsLandscape] = useState(false);
   const [turnDirection, setTurnDirection] = useState<"forward" | "backward" | null>(null);
@@ -48,6 +53,29 @@ export default function TheoryCultureZine() {
     : (currentPage === pages.length - 1 && !isLeavingBack) || isArrivingBack
       ? styles.backCover
       : "";
+  const desktopPageWidth = Math.max(220, Math.floor((availableWidth || 1040) / 2));
+  const desktopPageHeight = Math.round(desktopPageWidth * pageAspectRatio);
+  const pageWidth = compactViewport ? mobilePageWidth : desktopPageWidth;
+  const pageHeight = compactViewport ? mobilePageHeight : desktopPageHeight;
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 700px)");
+    const syncViewport = () => setCompactViewport(query.matches);
+    syncViewport();
+    query.addEventListener("change", syncViewport);
+    return () => query.removeEventListener("change", syncViewport);
+  }, []);
+
+  useEffect(() => {
+    const element = reader.current;
+    if (!element) return;
+
+    const updateWidth = () => setAvailableWidth(Math.floor(element.getBoundingClientRect().width));
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [pageMarkup]);
 
   const syncPageScale = (pageWidth?: number) => {
     const width = pageWidth ?? book.current?.pageFlip()?.getBoundsRect().pageWidth;
@@ -111,23 +139,24 @@ export default function TheoryCultureZine() {
   return (
     <div ref={reader} className={styles.reader}>
       <HTMLFlipBook
+        key={compactViewport ? "portrait" : `landscape-${pageWidth}`}
         ref={book}
-        className={`${styles.flipBook} ${!isLandscape ? styles.portraitBook : ""} ${bookPosition}`}
+        className={`stf__parent ${styles.flipBook} ${compactViewport ? styles.portraitBook : ""} ${bookPosition}`}
         style={{}}
-        width={336}
-        height={473}
+        width={pageWidth}
+        height={pageHeight}
         size="stretch"
         minWidth={220}
-        maxWidth={336}
+        maxWidth={pageWidth}
         minHeight={310}
-        maxHeight={473}
+        maxHeight={pageHeight}
         startPage={currentPage}
         startZIndex={0}
         autoSize
         drawShadow
         maxShadowOpacity={0.45}
         flippingTime={900}
-        usePortrait
+        usePortrait={compactViewport}
         showCover
         mobileScrollSupport
         swipeDistance={30}

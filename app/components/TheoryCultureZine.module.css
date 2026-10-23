@@ -3,6 +3,7 @@
   --zine-page-width: 336px;
   --zine-right-offset: -336px;
   display: grid;
+  width: 100%;
   justify-items: center;
   gap: 0;
   min-width: 0;
@@ -11,13 +12,12 @@
 .flipBook {
   max-width: 100%;
   filter: drop-shadow(0 1rem 1.5rem rgb(17 18 13 / 22%));
-  transition: margin 900ms cubic-bezier(.22, 1, .36, 1);
-  will-change: margin;
+  transition: translate 900ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .portraitBook { max-width: 336px !important; }
-.frontCover { margin-right: var(--zine-page-width); }
-.backCover { margin-left: var(--zine-page-width); }
+.frontCover { translate: calc(var(--zine-page-width) / -2) 0; }
+.backCover { translate: calc(var(--zine-page-width) / 2) 0; }
 
 .page {
   position: relative;
