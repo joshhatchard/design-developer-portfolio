@@ -11,7 +11,9 @@ let canvas; // Canvas object reference
 let splitSound, mergeSound, rotateSound, switchSound;
 let touchOrigin = null;
 let touchTarget = null;
-let lastTouchAt = 0;
+let pendingTap = null;
+let tapTimer = null;
+let resetGeneration = 0;
 let pointer = { x: -1, y: -1 };
 let selectedCell = null;
 let canvasResizeObserver = null;
@@ -80,6 +82,12 @@ function beginAudio() {
 }
 
 function resetSketch() {
+  clearTimeout(tapTimer);
+  pendingTap = null;
+  touchOrigin = null;
+  touchTarget = null;
+  selectedCell = null;
+  resetGeneration++;
   squares = [];
   hueBase = random(360);
   for (let i = 0; i < 2; i++) {
@@ -126,6 +134,14 @@ function setup() {
   canvas.elt.addEventListener('pointerleave', () => { pointer = { x: -1, y: -1 }; });
   canvas.elt.addEventListener('pointerdown', handlePointerDown);
   canvas.elt.addEventListener('keydown', handleKeyboard);
+  canvas.elt.addEventListener('touchstart', handleTouchStart, { passive: false });
+  canvas.elt.addEventListener('touchend', handleTouchEnd, { passive: false });
+  canvas.elt.addEventListener('touchcancel', () => {
+    touchOrigin = null;
+    touchTarget = null;
+    clearTimeout(tapTimer);
+    pendingTap = null;
+  });
 
   canvasResizeObserver = new ResizeObserver(resizeSketch);
   canvasResizeObserver.observe(document.querySelector('main'));
@@ -172,47 +188,56 @@ function getCellUnderMouse() {
 // ==============================
 // Mouse interaction: click to split or merge
 // ==============================
-function mousePressed() {
-  return false;
-}
 
 // ==============================
 // Keyboard interaction: rotate or switch shapes
 // ==============================
-function keyPressed() {
-  return false;
-}
 
-function touchStarted() {
+function handleTouchStart(event) {
+  event.preventDefault();
   beginAudio();
-  if (touches.length > 1) {
-    const cell = touchTarget || getCellUnderMouse();
-    if (cell) attemptMerge(cell);
+  if (event.touches.length !== 1) {
     touchOrigin = null;
     touchTarget = null;
-    lastTouchAt = millis();
-    return false;
+    return;
   }
-
-  touchOrigin = { x: touches[0].x, y: touches[0].y };
-  touchTarget = getCellUnderMouse();
-  return false;
+  updatePointer(event.touches[0]);
+  touchOrigin = { ...pointer };
+  touchTarget = getCellAt(pointer.x, pointer.y);
 }
 
-function touchEnded() {
-  lastTouchAt = millis();
-  if (!touchOrigin || !touchTarget) return false;
-  const deltaX = mouseX - touchOrigin.x;
-  const deltaY = mouseY - touchOrigin.y;
+function handleTouchEnd(event) {
+  event.preventDefault();
+  if (!touchOrigin || !touchTarget || !event.changedTouches.length) return;
+  updatePointer(event.changedTouches[0]);
+  const deltaX = pointer.x - touchOrigin.x;
+  const deltaY = pointer.y - touchOrigin.y;
   const distance = sqrt(deltaX * deltaX + deltaY * deltaY);
-
-  if (distance < 24) touchTarget.startShrink();
-  else if (abs(deltaX) > abs(deltaY)) touchTarget.cycleImage(deltaX > 0 ? 1 : -1);
-  else touchTarget.startRotate(deltaY > 0 ? -1 : 1);
+  const cell = touchTarget;
+  if (distance < 24) {
+    const now = performance.now();
+    if (pendingTap && now - pendingTap.time < 300 && Math.hypot(pointer.x - pendingTap.x, pointer.y - pendingTap.y) < 32) {
+      clearTimeout(tapTimer);
+      attemptMerge(pendingTap.cell);
+      pendingTap = null;
+    } else {
+      if (pendingTap && squares.includes(pendingTap.cell)) pendingTap.cell.startShrink();
+      clearTimeout(tapTimer);
+      pendingTap = { cell, time: now, ...pointer };
+      tapTimer = setTimeout(() => {
+        if (pendingTap && squares.includes(pendingTap.cell)) pendingTap.cell.startShrink();
+        pendingTap = null;
+      }, 300);
+    }
+  } else {
+    clearTimeout(tapTimer);
+    pendingTap = null;
+    if (abs(deltaX) > abs(deltaY)) cell.cycleImage(deltaX > 0 ? 1 : -1);
+    else cell.startRotate(deltaY > 0 ? -1 : 1);
+  }
 
   touchOrigin = null;
   touchTarget = null;
-  return false;
 }
 
 // ==============================
@@ -247,7 +272,9 @@ function attemptMerge(targetCell) {
     }
 
     // Delay to allow shrink animation before merging
+    const generation = resetGeneration;
     setTimeout(() => {
+      if (generation !== resetGeneration) return;
       squares = squares.filter(c => !group.includes(c));
       let parent = new ShapeCell(parentX, parentY, parentW, parentH, depth - 1);
       parent.scale = 0.001; // Start tiny

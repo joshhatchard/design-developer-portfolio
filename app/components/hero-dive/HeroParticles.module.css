@@ -10,3 +10,17 @@
   width: 100%;
   height: 100%;
 }
+
+@media (max-width: 700px) {
+  .particles::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 12% 28%, rgb(255 255 255 / 90%) 0 0.25rem, transparent 0.29rem),
+      radial-gradient(circle at 30% 74%, rgb(255 255 255 / 62%) 0 0.17rem, transparent 0.21rem),
+      radial-gradient(circle at 67% 19%, rgb(255 255 255 / 76%) 0 0.3rem, transparent 0.34rem),
+      radial-gradient(circle at 85% 46%, rgb(255 255 255 / 72%) 0 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 55% 86%, rgb(255 255 255 / 65%) 0 0.14rem, transparent 0.18rem);
+  }
+}
