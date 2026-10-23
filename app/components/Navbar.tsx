@@ -150,10 +150,14 @@ export default function Navbar({ page = "home" }: NavbarProps) {
     if (isCaseStudy) return;
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
+    window.addEventListener("portfolio-ready", schedule);
+    window.addEventListener("hero-entrance-complete", schedule);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      window.removeEventListener("portfolio-ready", schedule);
+      window.removeEventListener("hero-entrance-complete", schedule);
     };
   }, [isCaseStudy]);
 

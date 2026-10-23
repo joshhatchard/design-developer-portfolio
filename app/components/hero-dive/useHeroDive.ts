@@ -380,6 +380,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             if (!toolbarOnly) refresh();
           };
           window.addEventListener("resize", onViewportResize);
+          window.addEventListener("hero-entrance-complete", refresh);
           const sceneObserver = new ResizeObserver(() => {
             measure();
             update();
@@ -402,6 +403,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             tween?.kill();
             water.style.removeProperty("transform");
             window.removeEventListener("resize", onViewportResize);
+            window.removeEventListener("hero-entrance-complete", refresh);
             sceneObserver.disconnect();
             scrollState.heroes.delete(controller);
             scrollState.update.delete(update);
