@@ -65,6 +65,9 @@ body {
   color: var(--ink);
 }
 
+.navbar[data-surface="hero"] .nav-links a,
+.navbar[data-surface="hero"] .nav-wordmark,
+.navbar[data-surface="hero"] .nav-toggle,
 .navbar[data-surface="cta"] .nav-links a,
 .navbar[data-surface="cta"] .nav-wordmark,
 .navbar[data-surface="cta"] .nav-toggle {
@@ -176,7 +179,7 @@ body {
 .nav-toggle { display: none; }
 @media (max-width: 700px) {
   :root { --page-gutter: 1.25rem; }
-  .navbar { padding-block: 0.5rem; }
+  .navbar { padding-block: calc(0.5rem + env(safe-area-inset-top, 0px)) 0.5rem; }
   .navbar nav { flex-wrap: nowrap; gap: 1rem; }
   .navbar .nav-toggle {
     /* Align the visible 25px icon, not its 44px tap target, with the same

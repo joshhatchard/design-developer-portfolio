@@ -95,6 +95,8 @@ export default function Navbar({ page = "home" }: NavbarProps) {
         return;
       }
       const navY = header.getBoundingClientRect().top + header.offsetHeight / 2;
+      const heroBounds = document.getElementById("hero")?.getBoundingClientRect();
+      const isOnHero = Boolean(heroBounds && heroBounds.top <= navY && heroBounds.bottom > navY);
       const gallerySurface = document.querySelector<HTMLElement>("[data-gallery-surface]");
       const cta = document.getElementById("call-to-action");
       const heroFill = document.querySelector<HTMLElement>("[data-hero-fill]");
@@ -115,10 +117,10 @@ export default function Navbar({ page = "home" }: NavbarProps) {
         const bounds = heroFill.getBoundingClientRect();
         return bounds.top <= navY && bounds.bottom >= navY && bounds.left <= innerWidth / 2 && bounds.right >= innerWidth / 2;
       })());
-      const surface = isOnCta ? "cta" : isOnPrimary ? "primary" : "default";
+      const surface = isOnCta ? "cta" : isOnPrimary ? "primary" : isOnHero ? "hero" : "default";
       // Complete hit-testing/layout reads before changing any link styles.
       const colours = Array.from(header.querySelectorAll<HTMLElement>("a, button"), link => {
-        if (isOnCta) {
+        if (isOnCta || isOnHero) {
           return { link, colour: "#11120d" };
         }
         if (galleryColour) {
@@ -162,7 +164,7 @@ export default function Navbar({ page = "home" }: NavbarProps) {
   }, [isCaseStudy]);
 
   return (
-    <header ref={ref} className="navbar" data-entrance={isCaseStudy ? undefined : "home"} data-surface={isCaseStudy ? "case-study" : undefined} data-menu-open={menuOpen} data-menu-visible={menuVisible}>
+    <header ref={ref} className="navbar" data-entrance={isCaseStudy ? undefined : "home"} data-surface={isCaseStudy ? "case-study" : "hero"} data-menu-open={menuOpen} data-menu-visible={menuVisible}>
       <nav className="siteContainer" aria-label="Main navigation">
         {isCaseStudy ? (
           <PageTransitionLink className="nav-wordmark" href="/#hero" onClick={() => { prepareHomeAnchor("hero"); closeMenu(); }}>
