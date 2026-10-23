@@ -14,7 +14,7 @@ const label = DM_Mono({ subsets: ["latin"], weight: "400", variable: "--font-lab
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: {
-    default: `${siteName} — Designer & Developer`,
+    default: `${siteName} · Designer & Developer`,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_AU",
     siteName,
-    title: `${siteName} — Designer & Developer`,
+    title: `${siteName} · Designer & Developer`,
     description: siteDescription,
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteName} — Designer & Developer`,
+    title: `${siteName} · Designer & Developer`,
     description: siteDescription,
     images: ["/opengraph-image.png"],
   },

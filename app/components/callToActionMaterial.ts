@@ -112,9 +112,8 @@ const FRAGMENT = /* glsl */ `
   }
 `;
 
-// Mobile uses this instead of the animated hand-drawn shader above. It keeps
-// the graphic language—hard tonal planes and an ink edge—without per-pixel
-// noise, hatching, or repeated texture-style calculations.
+// Retained as an optional lower-cost material for future non-CTA uses. The CTA
+// itself uses the full hand-drawn shader at every viewport size.
 const LIGHTWEIGHT_FRAGMENT = /* glsl */ `
   uniform vec3 uInk;
   uniform vec3 uPaper;

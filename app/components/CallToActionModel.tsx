@@ -25,11 +25,10 @@ export default function CallToActionModel() {
     try {
       renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
     } catch { return; }
-    // The phone CTA uses the same model, but a deliberately tiny renderer and
-    // basic material. This keeps the scroll transformation without the cost
-    // of the hand-drawn desktop shader.
-    renderer.setPixelRatio(compactViewport ? 1 : Math.min(devicePixelRatio, 1.5));
-    renderer.setSize(compactViewport ? 384 : 480, compactViewport ? 384 : 480, false);
+    // Use the full desktop renderer on every viewport so the zoom has the
+    // same hand-drawn 3D treatment on phones as it does on larger screens.
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setSize(480, 480, false);
     renderer.toneMapping = NoToneMapping;
     const scene = new Scene();
     const camera = new OrthographicCamera(-1.4, 1.4, 1.4, -1.4, 0.1, 100);
@@ -40,7 +39,7 @@ export default function CallToActionModel() {
     spin.add(headPivot);
     // Keep the hand-drawn ink detail, but make the figure itself use the
     // site primary colour throughout the CTA sequence.
-    const material = createStickmanMaterial(renderer.getPixelRatio(), CTA_LIME_PALETTE, true);
+    const material = createStickmanMaterial(renderer.getPixelRatio(), CTA_LIME_PALETTE);
     let active = true;
     let model: Group | null = null;
     let idleAngle = 0;
@@ -129,11 +128,9 @@ export default function CallToActionModel() {
       poser.apply({ ...sampleDive(0), yaw: 0, hips: 0, spine: 0, head: 0, armRaise: 35, armSwing: 0, elbow: 0, spread: 32, thigh: 0, shin: 0, foot: 0 });
       model.traverse(object => {
         if (!(object instanceof Mesh)) return;
-        if (!compactViewport) {
-          const original = object.geometry;
-          object.geometry = toCreasedNormals(original, Math.PI);
-          original.dispose();
-        }
+        const original = object.geometry;
+        object.geometry = toCreasedNormals(original, Math.PI);
+        original.dispose();
         (Array.isArray(object.material) ? object.material : [object.material]).forEach(item => item.dispose());
         object.material = material;
         object.frustumCulled = false;
@@ -188,13 +185,11 @@ export default function CallToActionModel() {
       spin.rotation.x = renderedPitch;
       headPivot.rotation.x += ((-pointerY * 0.16 * idleAmount) - headPivot.rotation.x) * Math.min(1, delta * 10);
       headPivot.rotation.z += ((pointerX * -0.1 * idleAmount) - headPivot.rotation.z) * Math.min(1, delta * 10);
-      if (!compactViewport) {
-        material.uniforms.uSeed.value = Math.floor(degrees / 8) % 64;
-        material.uniforms.uFlat.value = parseFloat(style.getPropertyValue("--cta-flat")) || 0;
-        material.uniforms.uFinal.value = actor.dataset.ctaPrimary === "true"
-          ? 1
-          : parseFloat(style.getPropertyValue("--cta-final")) || 0;
-      }
+      material.uniforms.uSeed.value = Math.floor(degrees / 8) % 64;
+      material.uniforms.uFlat.value = parseFloat(style.getPropertyValue("--cta-flat")) || 0;
+      material.uniforms.uFinal.value = actor.dataset.ctaPrimary === "true"
+        ? 1
+        : parseFloat(style.getPropertyValue("--cta-final")) || 0;
       renderer.render(scene, camera);
     };
     const renders = runtime.current.render;

@@ -280,8 +280,7 @@
   .footer :global(.footerRight) { display: none; }
   .footer :global(.footerBack) { position: relative; top: auto; left: auto; flex: 0 0 2rem; transform: none; }
 
-  /* Match the desktop story with a single SVG transform: no second mobile
-     WebGL context is needed for the CTA model. */
+  /* Keep the desktop scroll story at a phone-friendly scale. */
   .section[data-animated="true"] { height: 440svh; }
   .section[data-animated="true"] .stage {
     display: grid;
