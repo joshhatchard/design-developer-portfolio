@@ -141,7 +141,7 @@ export function CaseStudyBlocks({ blocks, projectSlug }: { blocks: CaseStudyBloc
       return (
         <section id={block.id} key={block.id} className={styles.interactiveBlock}>
           <h2>{block.heading}</h2>
-          <iframe className={styles.interactiveFrame} src={`${block.src}?v=13`} title={block.title} />
+          <iframe className={styles.interactiveFrame} src={`${block.src}?v=14`} title={block.title} />
         </section>
       );
     }

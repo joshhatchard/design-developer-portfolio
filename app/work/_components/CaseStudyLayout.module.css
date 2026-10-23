@@ -184,6 +184,7 @@
 }
 
 @media (max-width: 700px) {
+  .interactiveFrame { aspect-ratio: 1; }
   .page { --case-page-gutter: 1.25rem; }
   .layout { display: block; margin-top: 7rem; }
   .intro h1 { font-size: clamp(3rem, 14vw, 5rem); }

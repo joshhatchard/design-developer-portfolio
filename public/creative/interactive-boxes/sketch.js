@@ -135,7 +135,10 @@ function setup() {
   hueBase = random(360); // Pick a random hue base for the color palette
 
   resetSketch();
-  document.getElementById('reset').addEventListener('click', resetSketch);
+  const resetButton = document.getElementById('reset');
+  resetButton.addEventListener('pointerdown', event => event.stopPropagation());
+  resetButton.addEventListener('touchstart', event => event.stopPropagation(), { passive: true });
+  resetButton.addEventListener('click', resetSketch);
 }
 
 function windowResized() {
