@@ -86,9 +86,7 @@ body {
 .navbar[data-surface="case-study"] .nav-toggle {
   color: var(--paper) !important;
 }
-.navbar[data-surface="case-study"] .nav-links a:hover,
 .navbar[data-surface="case-study"] .nav-links a:focus-visible,
-.navbar[data-surface="case-study"] .nav-wordmark:hover,
 .navbar[data-surface="case-study"] .nav-wordmark:focus-visible {
   color: var(--ink) !important;
 }
@@ -160,27 +158,19 @@ body {
   transform-origin: left;
   transition: transform 320ms var(--ease);
 }
-.nav-links a:hover,
 .nav-links a:focus-visible,
-.nav-wordmark:hover,
 .nav-wordmark:focus-visible,
-.footerBack:hover,
 .footerBack:focus-visible {
   color: var(--ink) !important;
   text-decoration: none;
 }
-.nav-links a:hover::before,
 .nav-links a:focus-visible::before,
-.nav-wordmark:hover::before,
 .nav-wordmark:focus-visible::before,
-.footerBack:hover::before,
 .footerBack:focus-visible::before { transform: scaleX(1); }
 
 .navbar[data-surface="primary"] .nav-links a::before,
 .navbar[data-surface="primary"] .nav-wordmark::before { background: var(--ink); }
-.navbar[data-surface="primary"] .nav-links a:hover,
 .navbar[data-surface="primary"] .nav-links a:focus-visible,
-.navbar[data-surface="primary"] .nav-wordmark:hover,
 .navbar[data-surface="primary"] .nav-wordmark:focus-visible { color: var(--primary) !important; }
 
 .nav-toggle { display: none; }
@@ -257,7 +247,6 @@ body {
     letter-spacing: -0.045em;
   }
   .navbar .nav-links a::before { background: var(--ink); }
-  .navbar .nav-links a:hover,
   .navbar .nav-links a:focus-visible { color: var(--primary) !important; background: transparent; }
 }
 
@@ -266,13 +255,19 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+  .navbar[data-surface="case-study"] .nav-links a:hover,
+  .navbar[data-surface="case-study"] .nav-wordmark:hover { color: var(--ink) !important; }
+  .nav-links a:hover,
+  .nav-wordmark:hover,
+  .footerBack:hover { color: var(--ink) !important; text-decoration: none; }
+  .nav-links a:hover::before,
+  .nav-wordmark:hover::before,
+  .footerBack:hover::before { transform: scaleX(1); }
+  .navbar[data-surface="primary"] .nav-links a:hover,
+  .navbar[data-surface="primary"] .nav-wordmark:hover { color: var(--primary) !important; }
+  a:hover { text-decoration: underline; }
 }
-
-.nav-links a:hover,
-.nav-wordmark:hover,
-.footerBack:hover { text-decoration: none; }
 
 a:focus-visible,
 button:focus-visible,

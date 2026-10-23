@@ -1,0 +1,31 @@
+.toggle {
+  position: fixed;
+  z-index: 60;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
+  font: 400 0.7rem/1 var(--font-label);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.toggle[aria-pressed="false"] {
+  background: var(--primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .toggle:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+}
+.toggle:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+
+@media (max-width: 700px) {
+  .toggle { right: 1rem; bottom: 1rem; }
+}

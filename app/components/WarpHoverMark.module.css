@@ -19,6 +19,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mark { transition: none; }
-  :global([data-card-hover-target]:hover) .mark,
   :global([data-card-hover-target]:focus-visible) .mark { clip-path: inset(0); }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  :global([data-card-hover-target]:hover) .mark { clip-path: inset(0); }
 }

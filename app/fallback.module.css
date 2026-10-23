@@ -13,4 +13,7 @@
 .copy { max-width: 38rem; margin: 1.75rem 0 2rem; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.5; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .link, .button { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0.7rem 1rem; border: 1px solid var(--primary); background: var(--primary); color: var(--ink); cursor: pointer; font: 400 0.75rem/1 var(--font-label); letter-spacing: 0.08em; text-decoration: none; text-transform: uppercase; }
-.link:hover, .link:focus-visible, .button:hover, .button:focus-visible { background: var(--paper); border-color: var(--paper); }
+.link:focus-visible, .button:focus-visible { background: var(--paper); border-color: var(--paper); }
+@media (hover: hover) and (pointer: fine) {
+  .link:hover, .button:hover { background: var(--paper); border-color: var(--paper); }
+}

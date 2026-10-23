@@ -69,7 +69,10 @@ export default function NextProjectLink({ href, title, previewSrc, previewAlt, p
         event.preventDefault();
       }}
     >
-      {title} <span aria-hidden="true">↗</span>
+      <span>{title}</span>
+      <svg className={styles.nextProjectIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6 18 18 6M9 6h9v9" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="square" strokeLinejoin="miter" />
+      </svg>
       {previewSrc && (
         <span ref={previewRef} className={styles.nextProjectPreview} style={{ aspectRatio: previewRatio }} aria-hidden="true">
           <span className={styles.nextProjectPreviewInner}>
