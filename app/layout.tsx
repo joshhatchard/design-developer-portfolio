@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${siteName} — Designer & Developer`,
     description: siteDescription,
+    images: ["/opengraph-image.png"],
   },
   robots: isPreviewDeployment ? { index: false, follow: false } : { index: true, follow: true },
 };
