@@ -107,6 +107,7 @@ export default function CallToAction() {
     const contactLinkGroups = section.querySelectorAll<HTMLElement>("[data-cta-link]");
     const primary = getComputedStyle(section).getPropertyValue("--primary").trim();
     const paper = getComputedStyle(section).getPropertyValue("--paper").trim();
+    gsap.set(section, { backgroundColor: paper });
     gsap.set(actor, { scale: 1, "--cta-spin": 0, "--cta-flat": 0, "--cta-final": 1, "--cta-idle": 1, rotationZ: 0, y: 0 });
     gsap.set(colour, { autoAlpha: 0 });
     gsap.set(words, { autoAlpha: 0 });
@@ -139,6 +140,7 @@ export default function CallToAction() {
       .to(actor, { scale: 250, duration: 1.7, ease: "power3.in" }, entryIdle)
       .to(actor, { "--cta-flat": 1, duration: 0.7 }, entryIdle + 0.9)
       .to(colour, { autoAlpha: 1, backgroundColor: primary, duration: 0.4 }, entryIdle + 1.35)
+      .to(section, { backgroundColor: primary, duration: 0.4 }, entryIdle + 1.35)
       .to(actor, { "--cta-final": 1, duration: 0.2 }, entryIdle + 1.35)
       .to(actor, { autoAlpha: 0, duration: 0.12 }, entryIdle + 1.72)
       .set(words[0], { autoAlpha: 1 }, entryIdle + 2.05)
@@ -149,6 +151,7 @@ export default function CallToAction() {
       .to(quoteWords[1], { yPercent: 0, autoAlpha: 1, duration: 0.35, stagger: { amount: reducedMotion ? 0 : 0.35 }, ease: "power3.out" }, secondQuote)
       .to(words[1], { autoAlpha: 0, y: -32, duration: 0.25 }, secondQuote + 0.85 + readingHold)
       .to(colour, { backgroundColor: paper, duration: 0.3 }, returnToCta)
+      .to(section, { backgroundColor: paper, duration: 0.3 }, returnToCta)
       .set(actor, { autoAlpha: 1, scale: 250, "--cta-spin": 720, "--cta-flat": 1, "--cta-final": 1, rotationZ: 28, y: 0 }, returnToCta)
       .to(actor, { scale: 1, y: () => -Math.min(window.innerHeight * 0.13, 110), duration: 1.1, ease: "power3.out" }, returnToCta + 0.15)
       // 720° → 1080° is one guaranteed visible turn while returning to the CTA.
