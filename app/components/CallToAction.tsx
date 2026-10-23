@@ -117,6 +117,8 @@ export default function CallToAction() {
     gsap.set(spinCaption, { autoAlpha: 0, y: 8 });
     gsap.set(footer, { autoAlpha: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 36 });
     gsap.set(contactLetters, { visibility: reducedMotion ? "visible" : "hidden" });
+    const emailLink = section.querySelector<HTMLElement>('a[href^="mailto:"]')!;
+    gsap.set(emailLink, { "--email-outline-opacity": reducedMotion ? 1 : 0 });
     const entryIdle = 0;
     // Extra scroll distance after the last word settles, for reading each quote.
     const readingHold = 0.65;
@@ -184,6 +186,11 @@ export default function CallToAction() {
           }, start);
       });
     });
+    contactReveal.to(emailLink, {
+      "--email-outline-opacity": 1,
+      duration: reducedMotion ? 0 : 0.32,
+      ease: "none",
+    }, reducedMotion ? 0 : 0.8);
     let contactRevealPlayed = false;
     timeline.call(() => {
       if (!contactRevealPlayed) {
