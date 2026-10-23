@@ -15,9 +15,15 @@
   pointer-events: none;
 }
 
-.model {
-  width: min(24vw, 12rem);
-  aspect-ratio: 1;
+.mark {
+  display: block;
+  width: clamp(1.8rem, 3.5vw, 2.35rem);
+  aspect-ratio: 0.68;
+  transform: translateY(-0.85rem);
+  animation: markIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: var(--ink);
+  mask: url("/brand/josh-hatchard-mark.svg") center / contain no-repeat;
+  -webkit-mask: url("/brand/josh-hatchard-mark.svg") center / contain no-repeat;
 }
 
 .stack {
@@ -41,7 +47,7 @@
   background: var(--ink);
   transform: scaleX(0.08);
   transform-origin: left center;
-  animation: loadToAlmostThere 1.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: loadToAlmostThere 760ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .screen[data-ready="true"] .progress span {
@@ -61,9 +67,19 @@
 }
 
 @media (max-width: 700px) {
-  .model { width: min(42vw, 10rem); }
+  .mark { width: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark { animation: none; }
+  .progress span { animation: none; transform: scaleX(1); }
+}
+
+@keyframes markIn {
+  from { opacity: 0; transform: translateY(-0.85rem) scale(0.6); }
+  to { opacity: 1; transform: translateY(-0.85rem) scale(1); }
 }
 
 @keyframes loadToAlmostThere {
-  to { transform: scaleX(0.86); }
+  to { transform: scaleX(0.88); }
 }

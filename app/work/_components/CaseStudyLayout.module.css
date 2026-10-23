@@ -35,7 +35,7 @@
   line-height: 1.3;
   letter-spacing: 0.04em;
 }
-:global(.projectBack) {
+.toc :global(.projectBack) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +54,7 @@
   cursor: pointer;
   transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
-:global(.projectBack:hover), :global(.projectBack:focus-visible) { border-color: var(--primary); background: var(--primary); color: var(--ink); }
+.toc :global(.projectBack:hover), .toc :global(.projectBack:focus-visible) { border-color: var(--primary); background: var(--primary); color: var(--ink); }
 .toc p { margin: 0 0 0.75rem; color: var(--paper); text-transform: uppercase; }
 .toc a { color: inherit; text-decoration: none; }
 .toc a[data-active="true"] { color: var(--primary); }

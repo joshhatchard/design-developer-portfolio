@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
-import { Mesh, PlaneGeometry, ShaderMaterial, SRGBColorSpace, TextureLoader, Vector2 } from "three";
+import { Mesh, PlaneGeometry, ShaderMaterial, SRGBColorSpace, Texture, TextureLoader, Vector2 } from "three";
 import gsap from "gsap";
 import { warpConfig } from "./config";
 import { fragmentShader, vertexShader } from "./shaders";
@@ -88,13 +88,31 @@ export default function WarpPlane({ entry }: { entry: WarpEntry }) {
       mark.style.setProperty("-webkit-clip-path", clipPath);
     };
     const markFrame = requestAnimationFrame(syncHoverMark);
-    const primaryTexture = image.dataset.warpHoverCard === ""
-      ? new TextureLoader().load("/brand/primary-lime.svg", (loaded) => {
+    let texture: Texture | null = null;
+    let primaryTexture: Texture | null = null;
+    const loadTextures = () => {
+      if (texture || !active) return;
+      if (image.dataset.warpHoverCard === "") {
+        primaryTexture = new TextureLoader().load("/brand/primary-lime.svg", (loaded) => {
+          loaded.colorSpace = SRGBColorSpace;
+          gl.initTexture(loaded);
+        });
+        material.uniforms.uPrimaryTexture.value = primaryTexture;
+      }
+      texture = new TextureLoader().load(entry.src, (loaded) => {
+        if (!active) { loaded.dispose(); return; }
         loaded.colorSpace = SRGBColorSpace;
+        sourceAspect = loaded.image.width / loaded.image.height;
         gl.initTexture(loaded);
-      })
-      : null;
-    material.uniforms.uPrimaryTexture.value = primaryTexture;
+        material.uniforms.uTexture.value = loaded;
+        ready = true;
+        measure();
+      }, undefined, () => {
+        // Failed textures keep their accessible DOM media visible.
+        ready = false;
+        image.style.removeProperty("opacity");
+      });
+    };
     const measurePosition = () => {
       const bounds = image.getBoundingClientRect();
       // Use the image's live viewport rectangle. Mixing window.scrollY with
@@ -109,19 +127,6 @@ export default function WarpPlane({ entry }: { entry: WarpEntry }) {
       material.uniforms.uUvScale.value.set(Math.min(1, boxAspect / sourceAspect), Math.min(1, sourceAspect / boxAspect));
     };
     resizePlane.current = measure;
-    const texture = new TextureLoader().load(entry.src, (loaded) => {
-      if (!active) { loaded.dispose(); return; }
-      loaded.colorSpace = SRGBColorSpace;
-      sourceAspect = loaded.image.width / loaded.image.height;
-      gl.initTexture(loaded);
-      material.uniforms.uTexture.value = loaded;
-      ready = true;
-      measure();
-    }, undefined, () => {
-      // Failed textures keep their accessible DOM media visible.
-      ready = false;
-      image.style.removeProperty("opacity");
-    });
     const update = () => {
       if (!nearViewport) { mesh.visible = false; return; }
       const nextHoverActive = Boolean(hoverTarget?.matches(":hover, :focus-visible"));
@@ -160,6 +165,7 @@ export default function WarpPlane({ entry }: { entry: WarpEntry }) {
     observer.observe(image);
     const visibility = new IntersectionObserver(([entry]) => {
       nearViewport = entry.isIntersecting;
+      if (nearViewport) loadTextures();
     }, { rootMargin: "200px" });
     visibility.observe(image);
     measure();
@@ -175,7 +181,7 @@ export default function WarpPlane({ entry }: { entry: WarpEntry }) {
       scene.remove(mesh);
       geometry.dispose();
       material.dispose();
-      texture.dispose();
+      texture?.dispose();
       primaryTexture?.dispose();
       hoverTween?.kill();
       const mark = hoverTarget?.querySelector<HTMLElement>("[data-warp-hover-mark]");

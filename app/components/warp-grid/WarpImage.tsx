@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useId, useRef } from "react";
 import { useScrollRuntime } from "./ScrollProvider";
 
@@ -22,6 +23,7 @@ export default function WarpImage({ src, alt, width, height, className, hoverOve
     return register({ id, src, element: ref.current });
   }, [id, src, register]);
   return <span ref={ref} role="img" aria-label={alt} className={className} data-gallery-image data-warp-hover-card={hoverOverlay ? "" : undefined} data-warp-hover-direction={hoverOverlay ? hoverDirection : undefined}
-    style={{ display: "block", width: "100%", aspectRatio: `${width} / ${height}`,
-      backgroundImage: `url("${src}")`, backgroundSize: "cover", backgroundPosition: "center" }} />;
+    style={{ display: "block", width: "100%", aspectRatio: `${width} / ${height}`, overflow: "hidden" }}>
+    <Image src={src} alt="" aria-hidden="true" width={width} height={height} unoptimized loading="lazy" decoding="async" sizes="(max-width: 700px) 100vw, 50vw" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
+  </span>;
 }

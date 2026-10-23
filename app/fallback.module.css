@@ -1,0 +1,16 @@
+.page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: clamp(1.5rem, 5vw, 5rem);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.content { width: min(100%, 42rem); }
+.code { margin: 0 0 1rem; color: var(--primary); font: 400 0.8rem/1.2 var(--font-label); letter-spacing: 0.12em; text-transform: uppercase; }
+.title { max-width: 11ch; margin: 0; font-family: var(--font-display); font-size: clamp(3rem, 10vw, 7rem); font-weight: 800; letter-spacing: -0.07em; line-height: 0.88; text-transform: uppercase; }
+.copy { max-width: 38rem; margin: 1.75rem 0 2rem; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.5; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.link, .button { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0.7rem 1rem; border: 1px solid var(--primary); background: var(--primary); color: var(--ink); cursor: pointer; font: 400 0.75rem/1 var(--font-label); letter-spacing: 0.08em; text-decoration: none; text-transform: uppercase; }
+.link:hover, .link:focus-visible, .button:hover, .button:focus-visible { background: var(--paper); border-color: var(--paper); }
