@@ -1,13 +1,6 @@
 .section {
   position: relative;
-  /* Continue the hero colour through the splash/lead-in so the diver never
-     appears to drop into an unpainted seam before the work surface begins. */
-  background: linear-gradient(
-    to bottom,
-    var(--primary) 0,
-    var(--primary) clamp(7rem, 11vw, 11rem),
-    transparent clamp(10rem, 15vw, 14rem)
-  );
+  background: transparent;
   color: var(--paper);
 }
 .content { overflow-x: clip; }
@@ -115,14 +108,6 @@
 
 
 @media (max-width: 700px) {
-  .section {
-    background: linear-gradient(
-      to bottom,
-      var(--primary) 0,
-      var(--primary) 6rem,
-      transparent 9rem
-    );
-  }
   .gallery {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: 0;
