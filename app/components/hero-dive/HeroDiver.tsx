@@ -64,6 +64,11 @@ export default function HeroDiver() {
   const { gl } = useThree();
   const { runtime } = useScrollRuntime();
   useEffect(() => {
+    // Hide the shared canvas before the asynchronous model can produce its
+    // first frame. It is changed to "true" below at the same moment the
+    // landing entrance is allowed to run.
+    const canvasHost = document.querySelector<HTMLElement>("[data-warp-canvas]");
+    canvasHost?.setAttribute("data-hero-figure-ready", "pending");
     const compact = window.matchMedia("(max-width: 700px)").matches;
     const state = runtime.current;
     const scene = new Scene();
@@ -141,6 +146,7 @@ export default function HeroDiver() {
       () => {
         if (!active) return;
         // Keep the original SVG and readable static hero if the model fails.
+        canvasHost?.removeAttribute("data-hero-figure-ready");
         document
           .querySelector("#hero")
           ?.setAttribute("data-model-failed", "true");
@@ -313,7 +319,6 @@ export default function HeroDiver() {
       gl.setScissorTest(false);
       // Hide the SVG only after this controller has actually drawn the model.
       hero.element.dataset.modelReady = "true";
-      const canvasHost = document.querySelector<HTMLElement>("[data-warp-canvas]");
       if (canvasHost) canvasHost.dataset.heroFigureReady = "true";
       hero.element.dataset.modelFacing =
         Math.sin(yaw.rotation.y) >= 0 ? "right" : "left";
@@ -323,7 +328,7 @@ export default function HeroDiver() {
       active = false;
       state.backgroundRender.delete(draw);
       document.querySelector("#hero")?.removeAttribute("data-model-ready");
-      document.querySelector<HTMLElement>("[data-warp-canvas]")?.removeAttribute("data-hero-figure-ready");
+      canvasHost?.removeAttribute("data-hero-figure-ready");
       if (root) disposeModel(root);
       scene.clear();
     };

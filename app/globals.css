@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 /* Global entrance elements live outside the hero CSS-module subtree. */
-[data-warp-canvas][data-hero-figure-ready="true"] {
+[data-warp-canvas][data-hero-figure-ready] {
   /* The renderer can finish before the loading/hero entrance has begun.
      Hold its first frame back so the figure only appears through the landing
      animation instead of flashing once beforehand. */
   opacity: 0;
 }
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-figure-ready="true"] {
+  opacity: 1;
   animation: portfolio-figure-land 0.65s cubic-bezier(.3, .7, .3, 1) both 0.35s;
 }
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-intro-skipped="true"] {
