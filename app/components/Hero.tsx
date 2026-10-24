@@ -110,7 +110,7 @@ export default function Hero() {
                 <rect x="-20" y="20" width="270" height="240" />
               </clipPath>
             </defs>
-            <g data-parallax="0.5" data-fly-away opacity="0.5" clipPath="url(#hero-left-birds)">
+            <g data-hero-copy clipPath="url(#hero-left-birds)">
               <g className={styles.birds}>
                 <image
                   href="/hero/birds.png"
@@ -121,6 +121,9 @@ export default function Hero() {
                   preserveAspectRatio="xMidYMid meet"
                 />
               </g>
+            </g>
+            <g data-parallax="0.5" data-stationary>
+              <circle className={styles.sun} cx="330" cy="245" r="104" />
             </g>
             <g data-parallax="1">
               <g className={styles.boulder}>

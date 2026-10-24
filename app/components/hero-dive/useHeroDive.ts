@@ -180,7 +180,10 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             sceneY =
               rect.top - stageRect.top + (rect.height - svg.viewBox.baseVal.height * sceneScale) / 2;
             controller.startX = sceneX + 350 * sceneScale;
-            controller.startFootY = sceneY + 375 * sceneScale;
+            // The model's visible soles sit slightly above its bounding-box floor.
+            // Tuck them into the cliff edge so swapping from the SVG figure to WebGL
+            // does not make the standing pose appear to lift off the board.
+            controller.startFootY = sceneY + 383 * sceneScale - 4;
             controller.figureHeight = 208 * sceneScale;
 
             const saved = highlight.style.transform;
@@ -223,6 +226,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
               const factor = Number(layer.dataset.parallax);
               const board = factor === 1;
               const fliesAway = layer.hasAttribute("data-fly-away");
+              const stationary = layer.hasAttribute("data-stationary");
               const fall = smooth(0.3, 0.5, p); // the board stays put until the diver is well clear of it
               const zoom = mix(1, controller.zoom, factor);
               const dx =
@@ -234,6 +238,8 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
                   ? fall * controller.height * 0.85
                   : fliesAway
                     ? -fall * controller.height * 1.2
+                    : stationary
+                      ? 0
                     : -(1 - fade) * controller.height * factor * 0.3);
               const tx =
                 ((controller.width / 2 - sceneX) * (1 - zoom) + dx) /

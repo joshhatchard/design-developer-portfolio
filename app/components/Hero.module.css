@@ -52,7 +52,10 @@
   letter-spacing: 0.07em;
 }
 .figureCaption text { stroke: none; }
+.sun { fill: var(--primary); }
 .copy {
+  position: relative;
+  z-index: 2;
   min-width: 0;
   padding-block: 2rem;
   transform: translate3d(var(--hero-copy-x, 0), var(--hero-copy-y, 0), 0);
@@ -87,6 +90,7 @@
 .hero:not([data-hero-intro="true"]) .description > span,
 .hero:not([data-hero-intro="true"]) .boulder,
 .hero:not([data-hero-intro="true"]) .birds,
+.hero:not([data-hero-intro="true"]) .sun,
 .hero:not([data-hero-intro="true"]) .figureCaptionInner,
 .hero:not([data-hero-intro="true"]) .figureIntro,
 .hero:not([data-hero-intro="true"]) .scrollHintInner { opacity: 0; }
@@ -163,6 +167,7 @@
 }
 .hero[data-hero-intro="true"] .boulder { animation: hero-boulder-enter 1.2s var(--ease, cubic-bezier(.16, 1, .3, 1)) both 0.35s; }
 .hero[data-hero-intro="true"] .birds { animation: hero-birds-enter 1.4s var(--ease, cubic-bezier(.16, 1, .3, 1)) both 0.9s; }
+.hero[data-hero-intro="true"] .sun { animation: hero-sun-enter 1s var(--ease, cubic-bezier(.16, 1, .3, 1)) both 0.45s; transform-origin: 330px 245px; }
 .hero[data-hero-intro="true"] .figureIntro { animation: hero-figure-land 0.65s cubic-bezier(.3, .7, .3, 1) both 0.35s; }
 .hero[data-hero-intro="true"] .figureCaptionInner { animation: hero-caption-enter 0.8s var(--ease, cubic-bezier(.16, 1, .3, 1)) both 0.8s; }
 
@@ -171,6 +176,7 @@
 @keyframes hero-copy-enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes hero-boulder-enter { from { opacity: 0; transform: translateY(70px); } to { opacity: 1; transform: none; } }
 @keyframes hero-birds-enter { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+@keyframes hero-sun-enter { from { opacity: 0; transform: scale(0.55); } to { opacity: 1; transform: none; } }
 @keyframes hero-caption-enter { from { opacity: 0; } to { opacity: 1; } }
 @keyframes hero-send-shake {
   0%, 100% { translate: 0; rotate: 0deg; }
