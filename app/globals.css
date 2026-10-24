@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+/* Global entrance elements live outside the hero CSS-module subtree. */
+html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-figure-ready="true"] {
+  animation: portfolio-figure-land 0.65s cubic-bezier(.3, .7, .3, 1) both 0.35s;
+}
+html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-intro-skipped="true"] {
+  animation: none !important;
+}
+@keyframes portfolio-figure-land {
+  0% { transform: translateY(-340px); opacity: 0; }
+  8% { opacity: 1; }
+  68% { transform: translateY(0); }
+  80% { transform: translateY(-9px); }
+  92% { transform: translateY(0); }
+  100% { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navbar, [data-warp-canvas] { animation: none !important; }
+}
+
 :root {
   --ease: cubic-bezier(.16, 1, .3, 1);
   --ink: #11120D;
