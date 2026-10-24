@@ -387,24 +387,29 @@ export default function PixelTrail({
       imageCells: 0,
       imageWidth: 0,
       imageHeight: 0,
-      pointer: { x: 0, y: 0, at: 0, vx: 0, vy: 0, inside: false }
+      pointer: { x: 0, y: 0, at: 0, vx: 0, vy: 0, inside: false },
+      pendingPointer: null
     };
 
-    const addTouch = (x, y, vx, vy) => {
+    const addTouch = (x, y, vx, vy, now) => {
       const s = settingsRef.current;
       const { points } = state;
-      const last = points[points.length - 1];
-      if (last) {
-        const dx = last.x - x;
-        const dy = last.y - y;
-        const dd = dx * dx + dy * dy;
+      const pointer = state.pointer;
+      const elapsed = now - pointer.at;
+      const dx = pointer.x - x;
+      const dy = pointer.y - y;
+      const dd = dx * dx + dy * dy;
+      const continuous = pointer.inside && elapsed <= 64;
+
+      if (!continuous) state.force = 0;
+      if (continuous) {
         const force = Math.max(0.3, Math.min(dd * 10000, 1));
         state.force = force;
         if (s.interpolate) {
           const lines = Math.min(32, Math.ceil(dd / Math.pow((s.trailSize * 0.5) / s.interpolate, 2)));
           if (lines > 1) {
             for (let i = 1; i < lines; i++) {
-              points.push({ x: last.x - (dx / lines) * i, y: last.y - (dy / lines) * i, age: 0, force, vx, vy });
+              points.push({ x: pointer.x - (dx / lines) * i, y: pointer.y - (dy / lines) * i, age: 0, force, vx, vy });
             }
           }
         }
@@ -622,26 +627,74 @@ export default function PixelTrail({
 
     const onMove = event => {
       if (event.pointerType !== 'mouse' || document.hidden) return;
-      const { x, y, inside } = toUv(event);
       const pointer = state.pointer;
-      const now = performance.now();
-      if (inside) {
-        const s = settingsRef.current;
-        const elapsed = Math.max(0.008, (now - pointer.at) / 1000);
-        if (pointer.inside) {
-          pointer.vx += ((x - pointer.x) / elapsed - pointer.vx) * 0.5;
-          pointer.vy += ((y - pointer.y) / elapsed - pointer.vy) * 0.5;
-        } else {
-          pointer.vx = 0;
-          pointer.vy = 0;
+      const coalesced = event.getCoalescedEvents?.() ?? [];
+      const samples = coalesced.length ? [...coalesced] : [];
+      const lastSample = samples[samples.length - 1];
+      if (!lastSample || lastSample.clientX !== event.clientX || lastSample.clientY !== event.clientY) samples.push(event);
+      const receivedAt = performance.now();
+      const maxStepSquared = 0.0072;
+
+      const emitSample = (x, y, inside, now) => {
+        if (inside) {
+          const s = settingsRef.current;
+          const elapsed = Math.max(0.008, (now - pointer.at) / 1000);
+          if (pointer.inside) {
+            pointer.vx += ((x - pointer.x) / elapsed - pointer.vx) * 0.5;
+            pointer.vy += ((y - pointer.y) / elapsed - pointer.vy) * 0.5;
+          } else {
+            pointer.vx = 0;
+            pointer.vy = 0;
+          }
+          addTouch(x, y, pointer.vx * s.flow * 0.3, pointer.vy * s.flow * 0.3, now);
+          wake();
         }
-        addTouch(x, y, pointer.vx * s.flow * 0.3, pointer.vy * s.flow * 0.3);
-        wake();
+        pointer.x = x;
+        pointer.y = y;
+        pointer.at = now;
+        pointer.inside = inside;
+      };
+
+      for (const sample of samples) {
+        const { x, y, inside } = toUv(sample);
+        const timeOffset = Math.max(-48, Math.min(0, sample.timeStamp - event.timeStamp));
+        const now = receivedAt + timeOffset;
+        const dx = pointer.x - x;
+        const dy = pointer.y - y;
+        const closeToPointer = dx * dx + dy * dy <= maxStepSquared;
+        const startsNewStroke = !pointer.inside || now - pointer.at > 64;
+
+        if (!inside || startsNewStroke) {
+          state.pendingPointer = null;
+          emitSample(x, y, inside, now);
+          continue;
+        }
+
+        if (closeToPointer && !state.pendingPointer) {
+          emitSample(x, y, inside, now);
+          continue;
+        }
+
+        const pending = state.pendingPointer;
+        if (!pending) {
+          state.pendingPointer = { x, y, inside, now };
+          continue;
+        }
+
+        const pendingDx = pending.x - x;
+        const pendingDy = pending.y - y;
+        const confirmsPending = pendingDx * pendingDx + pendingDy * pendingDy <= maxStepSquared;
+        if (confirmsPending) {
+          emitSample(pending.x, pending.y, pending.inside, pending.now);
+          emitSample(x, y, inside, now);
+        } else if (closeToPointer) {
+          emitSample(x, y, inside, now);
+        } else {
+          state.pendingPointer = { x, y, inside, now };
+          continue;
+        }
+        state.pendingPointer = null;
       }
-      pointer.x = x;
-      pointer.y = y;
-      pointer.at = now;
-      pointer.inside = inside;
     };
 
     const onDown = event => {
