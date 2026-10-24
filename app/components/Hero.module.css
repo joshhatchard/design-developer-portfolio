@@ -248,8 +248,8 @@
 
 @media (max-width: 700px) {
   .stage {
-    height: 100svh;
-    min-height: 100svh;
+    height: 100lvh;
+    min-height: 100lvh;
     padding-bottom: 0.5rem;
   }
   .description { display: none; }
@@ -258,8 +258,8 @@
     gap: 0.5rem;
   }
   .hero[data-dive="true"] .stage {
-    height: 100svh;
-    min-height: 100svh;
+    height: 100lvh;
+    min-height: 100lvh;
   }
 }
 

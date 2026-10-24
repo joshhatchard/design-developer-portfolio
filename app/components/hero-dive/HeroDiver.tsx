@@ -226,7 +226,10 @@ export default function HeroDiver() {
         hero.height / 2 - motion.y,
         0,
       );
-      if (p === 0) tumble.position.y -= hero.stageTop;
+      // During iOS pull-to-refresh the document can move while scroll progress
+      // is a tiny value above zero. Keep the fixed WebGL figure attached to the
+      // pulled hero artwork, then release this correction before the dive starts.
+      tumble.position.y -= hero.stageTop * (1 - smooth(0, 0.015, p));
       // Match the hero scene's pointer parallax while the figure is still
       // standing on the cliff, then ease it out before the dive takes over.
       const pointerDepth = 1 - smooth(0.06, 0.24, p);
