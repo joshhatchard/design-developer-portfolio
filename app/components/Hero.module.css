@@ -248,14 +248,18 @@
 
 @media (max-width: 700px) {
   .stage {
-    height: 100lvh;
-    min-height: 100lvh;
+    height: 100svh;
+    min-height: 100svh;
     padding-bottom: 0.5rem;
   }
   .description { display: none; }
   .hero[data-hero-layout="stacked"] .layout {
     grid-template-rows: auto minmax(0, min(60svh, calc((100vw - 2 * var(--page-gutter)) * 740 / 600)));
     gap: 0.5rem;
+  }
+  .hero[data-dive="true"] .stage {
+    height: 100svh;
+    min-height: 100svh;
   }
 }
 
@@ -266,16 +270,6 @@
   width: 100%;
   height: 100dvh;
   min-height: 100dvh;
-}
-
-/* This must come after the general dive stage rule: the WebGL canvas is also
-   locked to 100lvh on phones, keeping the model and SVG cliff in one space as
-   browser controls appear or collapse. */
-@media (max-width: 700px) {
-  .hero[data-dive="true"] .stage {
-    height: 100lvh;
-    min-height: 100lvh;
-  }
 }
 .fill { position: absolute; isolation: isolate; overflow: hidden; pointer-events: none; background: var(--hero-lime); opacity: 0; }
 .highlight { position: relative; transform-origin: left top; z-index: 1; }

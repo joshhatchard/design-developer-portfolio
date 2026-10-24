@@ -64,20 +64,6 @@ export default function HeroDiver() {
   const { gl } = useThree();
   const { runtime } = useScrollRuntime();
   useEffect(() => {
-    // Hide the shared canvas before the asynchronous model can produce its
-    // first frame. It is changed to "true" below at the same moment the
-    // landing entrance is allowed to run.
-    const canvasHost = document.querySelector<HTMLElement>("[data-warp-canvas]");
-    canvasHost?.setAttribute("data-hero-figure-ready", "pending");
-    const settleEntrance = (event: AnimationEvent) => {
-      if (event.animationName !== "portfolio-figure-land") return;
-      if (canvasHost?.dataset.heroFigureReady === "true") {
-        // Remove the completed CSS animation so the full-screen WebGL canvas
-        // is no longer kept in an expensive compositing layer.
-        canvasHost.dataset.heroFigureReady = "settled";
-      }
-    };
-    canvasHost?.addEventListener("animationend", settleEntrance);
     const compact = window.matchMedia("(max-width: 700px)").matches;
     const state = runtime.current;
     const scene = new Scene();
@@ -155,7 +141,6 @@ export default function HeroDiver() {
       () => {
         if (!active) return;
         // Keep the original SVG and readable static hero if the model fails.
-        canvasHost?.removeAttribute("data-hero-figure-ready");
         document
           .querySelector("#hero")
           ?.setAttribute("data-model-failed", "true");
@@ -241,10 +226,7 @@ export default function HeroDiver() {
         hero.height / 2 - motion.y,
         0,
       );
-      // During iOS pull-to-refresh the document can move while scroll progress
-      // is a tiny value above zero. Keep the fixed WebGL figure attached to the
-      // pulled hero artwork, then release this correction before the dive starts.
-      tumble.position.y -= hero.stageTop * (1 - smooth(0, 0.015, p));
+      if (p === 0) tumble.position.y -= hero.stageTop;
       // Match the hero scene's pointer parallax while the figure is still
       // standing on the cliff, then ease it out before the dive takes over.
       const pointerDepth = 1 - smooth(0.06, 0.24, p);
@@ -318,16 +300,17 @@ export default function HeroDiver() {
         ((1 - point.y) * hero.height) /
         2
       ).toFixed(2);
-      // End the model just above the handoff. This small inset keeps it from
-      // peeking into the gap before the work section without changing either
-      // section's background or layout.
-      const waterHeight = Math.max(0, Math.min(hero.height, hero.waterline - 16));
+      // The shared work heading sits across both sections. Clip the diver at
+      // the waterline so the section can cover it without trapping the heading
+      // inside a separate stacking context.
+      const waterHeight = Math.max(0, Math.min(hero.height, hero.waterline));
       gl.setScissor(0, hero.height - waterHeight, hero.width, waterHeight);
       gl.setScissorTest(true);
       gl.render(scene, camera);
       gl.setScissorTest(false);
       // Hide the SVG only after this controller has actually drawn the model.
       hero.element.dataset.modelReady = "true";
+      const canvasHost = document.querySelector<HTMLElement>("[data-warp-canvas]");
       if (canvasHost) canvasHost.dataset.heroFigureReady = "true";
       hero.element.dataset.modelFacing =
         Math.sin(yaw.rotation.y) >= 0 ? "right" : "left";
@@ -336,9 +319,8 @@ export default function HeroDiver() {
     return () => {
       active = false;
       state.backgroundRender.delete(draw);
-      canvasHost?.removeEventListener("animationend", settleEntrance);
       document.querySelector("#hero")?.removeAttribute("data-model-ready");
-      canvasHost?.removeAttribute("data-hero-figure-ready");
+      document.querySelector<HTMLElement>("[data-warp-canvas]")?.removeAttribute("data-hero-figure-ready");
       if (root) disposeModel(root);
       scene.clear();
     };

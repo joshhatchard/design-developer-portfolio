@@ -44,9 +44,19 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
       const starbursts = Array.from(splash.querySelectorAll<SVGGElement>("[data-splash-starburst]"));
       const particles = Array.from(splash.querySelectorAll<SVGGElement>("[data-splash-particle]"));
       const media = gsap.matchMedia();
+      let layoutWidth = document.documentElement.clientWidth;
+      let layoutHeight = window.innerHeight;
+      const stableLayoutHeight = () => {
+        const width = document.documentElement.clientWidth;
+        if (!window.matchMedia("(pointer: coarse)").matches || width !== layoutWidth) {
+          layoutWidth = width;
+          layoutHeight = window.innerHeight;
+        }
+        return layoutHeight;
+      };
       const setResponsiveLayout = () => {
         const width = document.documentElement.clientWidth;
-        const height = stage.getBoundingClientRect().height || window.innerHeight;
+        const height = stableLayoutHeight();
         const navHeight = document.querySelector(".navbar")?.getBoundingClientRect().height ?? 72;
         const edgeSpace = width <= 700 ? 8 : 16;
         hero.style.setProperty("--hero-nav-space", `${navHeight + edgeSpace}px`);
@@ -155,16 +165,16 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             // Layout must settle before the SVG anchors and model are measured,
             // regardless of which resize/refresh listener ran first.
             setResponsiveLayout();
-            const stageRect = stage.getBoundingClientRect();
-            controller.width = stageRect.width;
-            controller.height = stageRect.height;
+            controller.width = document.documentElement.clientWidth;
+            controller.height = window.innerHeight;
             if (animated) {
               hero.style.setProperty(
                 "--hero-scroll-height",
-                `${stageRect.height * diveConfig.stageHeights}px`,
+                `${stableLayoutHeight() * diveConfig.stageHeights}px`,
               );
             }
             const rect = svg.getBoundingClientRect();
+            const stageRect = stage.getBoundingClientRect();
             sceneScale = Math.min(rect.width / 600, rect.height / svg.viewBox.baseVal.height);
             sceneX = rect.left - stageRect.left + (rect.width - 600 * sceneScale) / 2;
             sceneY =
@@ -356,7 +366,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
                   trigger: hero,
                   start: "top top",
                   end: () =>
-                    `+=${stage.getBoundingClientRect().height * diveConfig.stageHeights}`,
+                    `+=${stableLayoutHeight() * diveConfig.stageHeights}`,
                   scrub: true,
                   invalidateOnRefresh: true,
                   onRefresh: measure,

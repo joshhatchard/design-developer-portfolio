@@ -1,19 +1,11 @@
 @import "tailwindcss";
 
 /* Global entrance elements live outside the hero CSS-module subtree. */
-[data-warp-canvas][data-hero-figure-ready="pending"] {
-  /* The renderer can finish before the loading/hero entrance has begun.
-     Hold its first frame back so the figure only appears through the landing
-     animation instead of flashing once beforehand. */
-  opacity: 0;
-}
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-figure-ready="true"] {
-  opacity: 1;
   animation: portfolio-figure-land 0.65s cubic-bezier(.3, .7, .3, 1) both 0.35s;
 }
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-intro-skipped="true"] {
   animation: none !important;
-  opacity: 1;
 }
 @keyframes portfolio-figure-land {
   0% { transform: translateY(-340px); opacity: 0; }
@@ -25,19 +17,6 @@ html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-intro-skipped="tr
 }
 @media (prefers-reduced-motion: reduce) {
   .navbar, [data-warp-canvas] { animation: none !important; }
-  [data-warp-canvas][data-hero-figure-ready="true"] { opacity: 1; }
-}
-
-/* The hero stage uses the largest stable viewport on touch devices so browser
-   toolbar changes cannot reflow the page. Keep the fixed WebGL layer on that same
-   stable viewport; otherwise its orthographic camera is stretched as the
-   browser controls appear or collapse. */
-@media (max-width: 700px) {
-  [data-warp-canvas] {
-    top: 0;
-    bottom: auto;
-    height: 100lvh;
-  }
 }
 
 :root {
