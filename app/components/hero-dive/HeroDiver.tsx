@@ -34,6 +34,17 @@ const ORBIT_END = diveConfig.cameraNeutral; // progress where it finishes back o
 const CAM_DIST = 1000;
 
 const BOIL_STEPS = 48; // how often the sketch lines redraw as you scroll (higher = more jittery "boil")
+const ENTRANCE_DELAY_MS = 350;
+const ENTRANCE_DURATION_MS = 650;
+
+function landingOffset(progress: number) {
+  // Matches the original landing's down-and-up bounce, but moves only the
+  // figure inside WebGL instead of compositing the entire fixed canvas.
+  if (progress < 0.68) return 340 * (1 - progress / 0.68);
+  if (progress < 0.8) return 9 * ((progress - 0.68) / 0.12);
+  if (progress < 0.92) return 9 * (1 - (progress - 0.8) / 0.12);
+  return 0;
+}
 
 function parseRgb(css: string, out: Vector3) {
   const m = css.match(/[\d.]+/g);
@@ -87,6 +98,14 @@ export default function HeroDiver() {
     // Hip height at the moment of take-off, measured from the posed model so the leap starts exactly where the planted pose ends.
     let launchKey = "";
     let launchY = 0;
+    let modelLoaded = false;
+    let entranceRequested = document.documentElement.dataset.portfolioReady === "true";
+    let entranceStartedAt: number | null = null;
+    const beginEntrance = () => {
+      entranceRequested = true;
+      if (modelLoaded) entranceStartedAt = performance.now();
+    };
+    window.addEventListener("portfolio-ready", beginEntrance, { once: true });
 
     new GLTFLoader().load(
       "/models/stickman.glb",
@@ -96,6 +115,8 @@ export default function HeroDiver() {
           return;
         }
         root = gltf.scene;
+        modelLoaded = true;
+        if (entranceRequested) entranceStartedAt = performance.now();
         poser = createPoser(root);
         poser.apply(sampleDive(0));
         const bounds = new Box3().setFromObject(root, true);
@@ -226,6 +247,13 @@ export default function HeroDiver() {
         hero.height / 2 - motion.y,
         0,
       );
+      const skipEntrance = hero.element.dataset.heroIntroSkipped === "true" || p > 0.001;
+      const elapsed = entranceStartedAt === null ? -1 : performance.now() - entranceStartedAt;
+      const entranceProgress = Math.max(0, Math.min(1, (elapsed - ENTRANCE_DELAY_MS) / ENTRANCE_DURATION_MS));
+      tumble.visible = skipEntrance || elapsed >= ENTRANCE_DELAY_MS;
+      if (!skipEntrance && elapsed >= ENTRANCE_DELAY_MS) {
+        tumble.position.y += landingOffset(entranceProgress);
+      }
       if (p === 0) tumble.position.y -= hero.stageTop;
       // Match the hero scene's pointer parallax while the figure is still
       // standing on the cliff, then ease it out before the dive takes over.
@@ -310,8 +338,6 @@ export default function HeroDiver() {
       gl.setScissorTest(false);
       // Hide the SVG only after this controller has actually drawn the model.
       hero.element.dataset.modelReady = "true";
-      const canvasHost = document.querySelector<HTMLElement>("[data-warp-canvas]");
-      if (canvasHost) canvasHost.dataset.heroFigureReady = "true";
       hero.element.dataset.modelFacing =
         Math.sin(yaw.rotation.y) >= 0 ? "right" : "left";
     };
@@ -319,8 +345,8 @@ export default function HeroDiver() {
     return () => {
       active = false;
       state.backgroundRender.delete(draw);
+      window.removeEventListener("portfolio-ready", beginEntrance);
       document.querySelector("#hero")?.removeAttribute("data-model-ready");
-      document.querySelector<HTMLElement>("[data-warp-canvas]")?.removeAttribute("data-hero-figure-ready");
       if (root) disposeModel(root);
       scene.clear();
     };
