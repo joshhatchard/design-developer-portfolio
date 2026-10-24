@@ -11,6 +11,7 @@ import type { HeroController } from "../hero-dive/controller";
 import { warpConfig } from "./config";
 import LoadingScreen from "../LoadingScreen";
 import SiteAudio from "../SiteAudio";
+import DesktopPixelTrail from "../DesktopPixelTrail";
 import { PageTransitionProvider } from "../PageTransition";
 
 const WarpCanvas = dynamic(() => import("./WarpCanvas"), { ssr: false });
@@ -169,6 +170,7 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
       <PageTransitionProvider>
         {children}
         <SiteAudio />
+        <DesktopPixelTrail />
         {!isCaseStudy && <WarpCanvas />}
         <LoadingScreen runtime={runtime} />
       </PageTransitionProvider>
