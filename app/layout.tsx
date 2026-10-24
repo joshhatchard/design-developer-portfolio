@@ -1,14 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, DM_Mono, Instrument_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import ScrollProvider from "./components/warp-grid/ScrollProvider";
 import { isPreviewDeployment, siteDescription, siteName, siteUrl } from "./site";
 
-const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
-const body = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-body" });
-const label = DM_Mono({ subsets: ["latin"], weight: "400", variable: "--font-label" });
+const display = localFont({
+  src: "./fonts/Archivo-Variable.ttf",
+  weight: "100 900",
+  variable: "--font-display",
+  declarations: [{ prop: "font-stretch", value: "62% 125%" }],
+});
+const body = localFont({
+  src: "./fonts/InstrumentSans-Variable.ttf",
+  weight: "400 500",
+  variable: "--font-body",
+});
+const label = localFont({
+  src: "./fonts/DMMono-Regular.ttf",
+  weight: "400",
+  variable: "--font-label",
+});
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
