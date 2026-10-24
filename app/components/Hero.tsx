@@ -123,7 +123,7 @@ export default function Hero() {
               </g>
             </g>
             <g data-parallax="0.5" data-stationary>
-              <circle className={styles.sun} cx="330" cy="245" r="104" />
+              <circle className={styles.sun} cx="350" cy="225" r="104" />
             </g>
             <g data-parallax="1">
               <g className={styles.boulder}>
