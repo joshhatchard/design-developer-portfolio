@@ -119,6 +119,9 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
     };
     const tick = (time: number, deltaMs: number) => {
       lenis?.raf(time * 1000);
+      // Sample native touch scrolling before calculating and drawing the pose.
+      // A separate scroll callback can otherwise leave WebGL a frame behind.
+      ScrollTrigger.update();
       const delta = Math.min(64, Math.max(1, deltaMs));
       const scroll = lenis?.scroll ?? window.scrollY;
       const raw = enabled ? (scroll - previous) * (1000 / 60) / delta : 0;
@@ -135,7 +138,6 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
       runtime.current.commit.forEach((callback) => callback());
       runtime.current.render.forEach((callback) => callback());
     };
-    lenis?.on("scroll", ScrollTrigger.update);
     gsap.ticker.lagSmoothing(0);
     gsap.ticker.add(tick);
     let viewportWidth = window.innerWidth;
@@ -157,7 +159,6 @@ export default function ScrollProvider({ children }: { children: ReactNode }) {
       observer.disconnect();
       window.removeEventListener("resize", onViewportResize);
       gsap.ticker.remove(tick);
-      lenis?.off("scroll", ScrollTrigger.update);
       lenis?.destroy();
       runtime.current.lenis = null;
       runtime.current.velocity = 0;

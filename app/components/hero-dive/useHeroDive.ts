@@ -359,7 +359,8 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
           const tween = animated
             ? gsap.to(scrollProgress, {
                 value: 1,
-                onUpdate: update,
+                // The shared tick updates this controller once, after sampling
+                // ScrollTrigger and before rendering the figure.
                 ease: "none",
                 scrollTrigger: {
                   id: "hero-dive",

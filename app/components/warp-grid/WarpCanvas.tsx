@@ -30,14 +30,16 @@ function SceneObjects({ desktopMotion }: { desktopMotion: boolean }) {
       gl.autoClear = false;
       gl.clear();
       runtime.current.backgroundRender.forEach(callback => callback());
-      gl.clearDepth();
-      gl.render(scene, camera);
+      if (desktopMotion) {
+        gl.clearDepth();
+        gl.render(scene, camera);
+      }
       gl.autoClear = true;
     };
     const renderers = runtime.current.render;
     renderers.add(render);
     return () => { renderers.delete(render); };
-  }, [gl, scene, camera, runtime]);
+  }, [gl, scene, camera, runtime, desktopMotion]);
   // Native mobile scrolling must move images and text together. Fixed-canvas
   // gallery copies can trail the browser's scroll compositor by a frame.
   return <><HeroDiver />{desktopMotion && motionEnabled && entries.map((entry) => <WarpPlane key={entry.id} entry={entry} />)}</>;
