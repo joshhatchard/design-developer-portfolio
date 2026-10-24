@@ -200,7 +200,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px dotted currentColor;
+  border: 2px dotted #000;
   opacity: var(--email-outline-opacity, 1);
   pointer-events: none;
 }

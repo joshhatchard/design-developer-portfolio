@@ -186,11 +186,12 @@ export default function CallToAction() {
           }, start);
       });
     });
+    const emailRevealEnd = 0.8 + Math.max(0, emailLink.querySelectorAll("[data-cta-letter]").length - 1) * 0.04 + 0.32;
     contactReveal.to(emailLink, {
       "--email-outline-opacity": 1,
       duration: reducedMotion ? 0 : 0.32,
       ease: "none",
-    }, reducedMotion ? 0 : 0.8);
+    }, reducedMotion ? 0 : emailRevealEnd);
     let contactRevealPlayed = false;
     timeline.call(() => {
       if (!contactRevealPlayed) {
