@@ -69,6 +69,15 @@ export default function HeroDiver() {
     // landing entrance is allowed to run.
     const canvasHost = document.querySelector<HTMLElement>("[data-warp-canvas]");
     canvasHost?.setAttribute("data-hero-figure-ready", "pending");
+    const settleEntrance = (event: AnimationEvent) => {
+      if (event.animationName !== "portfolio-figure-land") return;
+      if (canvasHost?.dataset.heroFigureReady === "true") {
+        // Remove the completed CSS animation so the full-screen WebGL canvas
+        // is no longer kept in an expensive compositing layer.
+        canvasHost.dataset.heroFigureReady = "settled";
+      }
+    };
+    canvasHost?.addEventListener("animationend", settleEntrance);
     const compact = window.matchMedia("(max-width: 700px)").matches;
     const state = runtime.current;
     const scene = new Scene();
@@ -327,6 +336,7 @@ export default function HeroDiver() {
     return () => {
       active = false;
       state.backgroundRender.delete(draw);
+      canvasHost?.removeEventListener("animationend", settleEntrance);
       document.querySelector("#hero")?.removeAttribute("data-model-ready");
       canvasHost?.removeAttribute("data-hero-figure-ready");
       if (root) disposeModel(root);

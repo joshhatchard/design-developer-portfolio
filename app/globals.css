@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Global entrance elements live outside the hero CSS-module subtree. */
-[data-warp-canvas][data-hero-figure-ready] {
+[data-warp-canvas][data-hero-figure-ready="pending"] {
   /* The renderer can finish before the loading/hero entrance has begun.
      Hold its first frame back so the figure only appears through the landing
      animation instead of flashing once beforehand. */
