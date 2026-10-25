@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Match the mobile hero stage: Safari toolbar motion must not rescale WebGL. */
+@media (max-width: 700px) {
+  [data-warp-canvas] {
+    top: 0;
+    bottom: auto;
+    height: 100lvh;
+  }
+}
+
 /* Global entrance elements live outside the hero CSS-module subtree. */
 html[data-portfolio-ready="true"] [data-warp-canvas][data-hero-figure-ready="true"] {
   animation: portfolio-figure-land 0.65s cubic-bezier(.3, .7, .3, 1) both 0.35s;

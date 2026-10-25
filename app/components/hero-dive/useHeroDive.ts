@@ -44,16 +44,9 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
       const starbursts = Array.from(splash.querySelectorAll<SVGGElement>("[data-splash-starburst]"));
       const particles = Array.from(splash.querySelectorAll<SVGGElement>("[data-splash-particle]"));
       const media = gsap.matchMedia();
-      let layoutWidth = document.documentElement.clientWidth;
-      let layoutHeight = window.innerHeight;
-      const stableLayoutHeight = () => {
-        const width = document.documentElement.clientWidth;
-        if (!window.matchMedia("(pointer: coarse)").matches || width !== layoutWidth) {
-          layoutWidth = width;
-          layoutHeight = window.innerHeight;
-        }
-        return layoutHeight;
-      };
+      // CSS owns viewport sizing. Camera, cliff and timeline all use that same
+      // space rather than mixing stable layout with changing window.innerHeight.
+      const stableLayoutHeight = () => stage.getBoundingClientRect().height;
       const setResponsiveLayout = () => {
         const width = document.documentElement.clientWidth;
         const height = stableLayoutHeight();
@@ -165,8 +158,9 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             // Layout must settle before the SVG anchors and model are measured,
             // regardless of which resize/refresh listener ran first.
             setResponsiveLayout();
-            controller.width = document.documentElement.clientWidth;
-            controller.height = window.innerHeight;
+            const stageRect = stage.getBoundingClientRect();
+            controller.width = stageRect.width;
+            controller.height = stageRect.height;
             if (animated) {
               hero.style.setProperty(
                 "--hero-scroll-height",
@@ -174,7 +168,6 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
               );
             }
             const rect = svg.getBoundingClientRect();
-            const stageRect = stage.getBoundingClientRect();
             sceneScale = Math.min(rect.width / 600, rect.height / svg.viewBox.baseVal.height);
             sceneX = rect.left - stageRect.left + (rect.width - 600 * sceneScale) / 2;
             sceneY =
@@ -258,10 +251,14 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             });
 
             const expand = smooth(0.04, 0.2, p);
+            const expanded = expand === 1 ? "true" : "false";
+            if (hero.dataset.limeExpanded !== expanded) hero.dataset.limeExpanded = expanded;
             fill.style.left = `${mix(badge.left, 0, expand)}px`;
             fill.style.top = `${mix(badge.top, 0, expand)}px`;
-            fill.style.width = `${mix(badge.width, controller.width, expand)}px`;
-            fill.style.height = `${mix(badge.height, controller.height, expand)}px`;
+            // Once expanded, follow the actual stage as Safari's toolbar moves.
+            // Cached viewport pixels can leave a white strip beneath the fill.
+            fill.style.width = expand === 1 ? "100%" : `${mix(badge.width, controller.width, expand)}px`;
+            fill.style.height = expand === 1 ? "100%" : `${mix(badge.height, controller.height, expand)}px`;
             fill.style.opacity = p > 0.04 ? "1" : "0";
             fill.style.transformOrigin = "left top";
             fill.style.transform = "none";
@@ -416,6 +413,7 @@ export function useHeroDive(ref: RefObject<HTMLElement | null>) {
             scrollState.update.delete(update);
             scrollState.refresh.delete(measure);
             delete hero.dataset.dive;
+            delete hero.dataset.limeExpanded;
             hero.style.removeProperty("--hero-scroll-height");
             fullSendLetters.forEach(letter => letter.style.removeProperty("scale"));
             copy.forEach((element) => {

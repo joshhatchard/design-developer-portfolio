@@ -2,7 +2,7 @@
 
 import { Component, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { NoToneMapping } from "three";
+import { NoToneMapping, Vector2 } from "three";
 import { useScrollRuntime } from "./ScrollProvider";
 import HeroDiver from "../hero-dive/HeroDiver";
 import WarpPlane from "./WarpPlane";
@@ -26,7 +26,23 @@ function SceneObjects({ desktopMotion }: { desktopMotion: boolean }) {
   const { entries, runtime, motionEnabled } = useScrollRuntime();
   const { gl, scene, camera } = useThree();
   useEffect(() => {
+    let lastFrame = "";
+    const dimensions = new Vector2();
     const render = () => {
+      if (document.hidden) return;
+      if (!desktopMotion) {
+        const hero = runtime.current.heroes.values().next().value;
+        gl.getSize(dimensions);
+        const key = hero?.visible
+          ? [hero.progress, hero.stageTop, hero.waterline, hero.width, hero.height,
+              hero.startX, hero.startFootY, hero.figureHeight, hero.ink,
+              dimensions.x, dimensions.y, gl.getPixelRatio()].join("|")
+          : `offscreen|${dimensions.x}|${dimensions.y}`;
+        // Keep the existing framebuffer while idle. Clear once on exit so a
+        // stale figure cannot remain over the projects. Retry until GLTF loads.
+        if (key === lastFrame && (!hero?.visible || hero.element.dataset.modelReady === "true")) return;
+        lastFrame = key;
+      }
       gl.autoClear = false;
       gl.clear();
       runtime.current.backgroundRender.forEach(callback => callback());
@@ -61,9 +77,9 @@ export default function WarpCanvas() {
           orthographic
           camera={{ position: [0, 0, 1000], near: 0.1, far: 2000, zoom: 1 }}
           frameloop="never"
-          // The phone scene only contains the hero figure, so it can use a
-          // sharper cap without paying for the desktop gallery shaders.
-          dpr={desktopMotion ? [1, 1.25] : [1, 1.5]}
+          // A 1x phone canvas shades 56% fewer pixels than the previous 1.5x
+          // cap. Keep antialiasing and the same model shader and geometry.
+          dpr={desktopMotion ? [1, 1.25] : 1}
           gl={{ alpha: true, antialias: true, toneMapping: NoToneMapping }}
           fallback={null}
           onCreated={({ gl }) => {

@@ -184,8 +184,10 @@ export default function HeroDiver() {
       // Apply the supplied world-space poser in a neutral parent frame first.
       resetNeutral();
       const motion = flight(hero, hero.figureHeight * hipRatio, launchHip);
-      const pointerX = Number(getComputedStyle(hero.element).getPropertyValue("--hero-pointer-x")) || 0;
-      const pointerY = Number(getComputedStyle(hero.element).getPropertyValue("--hero-pointer-y")) || 0;
+      // Touch layouts have no pointer parallax; avoid forced style reads there.
+      const pointerStyle = compact ? null : getComputedStyle(hero.element);
+      const pointerX = Number(pointerStyle?.getPropertyValue("--hero-pointer-x")) || 0;
+      const pointerY = Number(pointerStyle?.getPropertyValue("--hero-pointer-y")) || 0;
       // Before the leap, let the figure acknowledge the cursor with a small
       // balancing turn and arm response. The authored dive pose takes over at
       // launch, so this cannot disturb the airborne choreography.

@@ -257,10 +257,6 @@
     grid-template-rows: auto minmax(0, min(60svh, calc((100vw - 2 * var(--page-gutter)) * 740 / 600)));
     gap: 0.5rem;
   }
-  .hero[data-dive="true"] .stage {
-    height: 100svh;
-    min-height: 100svh;
-  }
 }
 
 .hero[data-dive="true"] { height: var(--hero-scroll-height); }
@@ -272,6 +268,20 @@
   min-height: 100dvh;
 }
 .fill { position: absolute; isolation: isolate; overflow: hidden; pointer-events: none; background: var(--hero-lime); opacity: 0; }
+/* Paint the full scroll section beneath the expanded overlay, including the
+   sticky stage's bottom edge as it hands off to the work section. */
+.hero[data-lime-expanded="true"],
+.hero[data-lime-expanded="true"] .stage {
+  background: var(--hero-lime);
+}
+/* Keep this after the general dive rule so it cannot override mobile sizing. */
+@media (max-width: 700px) {
+  .stage,
+  .hero[data-dive="true"] .stage {
+    height: 100lvh;
+    min-height: 100lvh;
+  }
+}
 .highlight { position: relative; transform-origin: left top; z-index: 1; }
 .hero[data-model-ready="true"] .fallbackFigure { visibility: hidden; }
 
