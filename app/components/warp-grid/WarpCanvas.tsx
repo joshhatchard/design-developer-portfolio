@@ -77,9 +77,9 @@ export default function WarpCanvas() {
           orthographic
           camera={{ position: [0, 0, 1000], near: 0.1, far: 2000, zoom: 1 }}
           frameloop="never"
-          // A 1x phone canvas shades 56% fewer pixels than the previous 1.5x
-          // cap. Keep antialiasing and the same model shader and geometry.
-          dpr={desktopMotion ? [1, 1.25] : 1}
+          // Restore the sharper mobile model while retaining the frame-skipping
+          // work that keeps the scroll animation responsive.
+          dpr={desktopMotion ? [1, 1.25] : [1, 1.5]}
           gl={{ alpha: true, antialias: true, toneMapping: NoToneMapping }}
           fallback={null}
           onCreated={({ gl }) => {
